@@ -1,0 +1,1378 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "chatbot-villalba-v1",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "f5b2b8ed-76f0-4132-8c74-0d6df8d3a3ab",
+      "name": "chat",
+      "position": [
+        6400,
+        4400
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "webhookId": "a52f8929-9170-4d7b-9aed-fb7a7822ffe5",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.body.action }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "file_upload"
+            },
+            {
+              "value2": "user_message",
+              "output": 1
+            },
+            {
+              "value2": "get_availability",
+              "output": 2
+            },
+            {
+              "value2": "user_abandoned_page",
+              "output": 3
+            }
+          ]
+        }
+      },
+      "id": "a276ac94-ce2d-4617-982c-fdb41656d544",
+      "name": "Router de Acción",
+      "position": [
+        7072,
+        4240
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Detect file type from binary data or body metadata\n// v2.0 FIX by Claude Code 28/02/2026: RENAME binary key to 'file' for Extract PDF Text compatibility\nconst item = $input.first();\nconst binary = item.binary;\nconst body = item.json.body || {};\n\nlet fileName = 'archivo_desconocido';\nlet hasBinary = false;\nlet binaryKey = null;\n\n// Check binary data first (from multipart upload)\nif (binary) {\n  binaryKey = Object.keys(binary)[0];\n  if (binaryKey) {\n    fileName = binary[binaryKey].fileName || fileName;\n    hasBinary = true;\n  }\n}\n\n// Fallback: check body for file metadata\nif (fileName === 'archivo_desconocido') {\n  if (body.file && body.file.name) fileName = body.file.name;\n  else if (body.fileName) fileName = body.fileName;\n}\n\nconst ext = fileName !== 'archivo_desconocido' ? fileName.split('.').pop().toLowerCase() : '';\nconst isPdf = ext === 'pdf';\nconst isImage = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'tiff'].includes(ext);\nconst isDocument = ['pdf', 'doc', 'docx', 'txt', 'csv'].includes(ext);\n\nlet fileType = 'unknown';\nif (isPdf) fileType = 'pdf';\nelse if (isImage) fileType = 'image';\nelse if (isDocument) fileType = 'document';\n\n// If we have binary but couldn't detect from filename, check mimeType\nif (fileType === 'unknown' && hasBinary && binaryKey) {\n  const mime = (binary[binaryKey].mimeType || '').toLowerCase();\n  if (mime.includes('pdf')) { fileType = 'pdf'; }\n  else if (mime.startsWith('image/')) fileType = 'image';\n  else if (mime.includes('text') || mime.includes('csv')) fileType = 'document';\n}\n\nconst result = {\n  json: {\n    ...item.json,\n    chatInput: body.text || 'Por favor analiza el archivo recibido.',\n    _fileType: fileType,\n    _fileName: fileName,\n    _fileExt: ext || 'unknown',\n    _hasBinary: hasBinary\n  }\n};\n\n// CRITICAL FIX: Normalize binary key to 'file' so Extract PDF Text can find it.\nif (binary && binaryKey) {\n  result.binary = {};\n  result.binary.file = binary[binaryKey];\n  if (binaryKey !== 'file') {\n    result.binary.data = binary[binaryKey];\n  }\n} else if (binary) {\n  result.binary = binary;\n}\n\nreturn [result];"
+      },
+      "id": "dd3b8d7e-a5c3-463d-bc33-8eecec7392b5",
+      "name": "Code: Detect File Type",
+      "position": [
+        7296,
+        3828
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "pdf-check",
+              "leftValue": "={{ $json._fileType }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5a99f33b-9863-41d5-b3b0-2a671c1961f2",
+      "name": "Is PDF?",
+      "position": [
+        7520,
+        3828
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "file",
+        "options": {
+          "keepSource": false
+        }
+      },
+      "id": "24b58043-0a32-41e1-ad55-e9dc93b0d2ba",
+      "name": "Extract PDF Text",
+      "position": [
+        7744,
+        3704
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format Extracted PDF — v1.9 FIX SESSION PROPAGATION\nconst item = $input.first();\nconst pages = item.json.text || '';\nlet extractedText = '';\nif (Array.isArray(pages)) extractedText = pages.join('\\n\\n');\nelse if (typeof pages === 'string') extractedText = pages;\n\nconst fileType = $('Code: Detect File Type').first().json;\nconst body = fileType.body || {};\n\nreturn [{ json: {\n  _extractedText: extractedText || 'No se pudo extraer texto del PDF.',\n  _fileName: fileType._fileName || body._fileName || 'documento.pdf',\n  chatInput: body.text || fileType.chatInput || '',\n  visitorId: body.visitorId || fileType.visitorId || '',\n  sessionId: body.sessionId || fileType.sessionId || '',\n  clientId: body.clientId || fileType.clientId || '',\n  lang: body.lang || fileType.lang || 'es'\n}, binary: item.binary }];"
+      },
+      "id": "615c2cda-14d1-4655-b458-9e3bcc705d8b",
+      "name": "Format Extracted PDF",
+      "position": [
+        7968,
+        3704
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ 'Eres un ANALISTA DOCUMENTAL experto y asistente virtual. Analiza el siguiente documento de texto extraído de un PDF.\\n\\nTu PRIMERA tarea es determinar si este documento es un comprobante de pago (transferencia bancaria, depósito, pago por billetera virtual como Mercado Pago, etc).\\n\\nSi ES un comprobante de pago, extrae los datos y responde EXCLUSIVAMENTE con este JSON:\\n{\\n  \"documentType\": \"payment_receipt\",\\n  \"isValidReceipt\": true,\\n  \"isLegalDocument\": false,\\n  \"amount\": <número sin símbolos>,\\n  \"operation_id\": \"<código de operación/referencia>\",\\n  \"transaction_date\": \"<YYYY-MM-DD>\",\\n  \"transaction_time\": \"<HH:MM>\",\\n  \"sender_name\": \"<quién envía el dinero>\",\\n  \"recipient_name\": \"<quién recibe el dinero>\",\\n  \"suggestions\": [\"Consultar estado del pago\", \"Agendar consulta\", \"Tengo otra consulta\"],\\n  \"action\": \"payment_inquiry\"\\n}\\n\\nSi NO es un comprobante de pago, pero es un documento que el usuario envía para EXPLICAR SU SITUACIÓN (ej. un contrato, una notificación, un informe, etc.), clasifícalo como \"legal_document\" y responde con:\\n{\\n  \"documentType\": \"legal_document\",\\n  \"isValidReceipt\": false,\\n  \"isLegalDocument\": true,\\n  \"documentAnalysis\": \"<análisis detallado del documento>\",\\n  \"documentSummary\": \"<resumen en 1-2 oraciones>\",\\n  \"suggestions\": [\"Agendar consulta sobre este caso\", \"Enviar otro documento\", \"Hacer una pregunta sobre esto\"],\\n  \"action\": \"general_inquiry\"\\n}\\n\\nSi el documento es COMPLETAMENTE IRRELEVANTE o está vacío, responde con:\\n{\\n  \"documentType\": \"irrelevant\",\\n  \"isValidReceipt\": false,\\n  \"isLegalDocument\": false,\\n  \"text\": \"<explicación breve>\",\\n  \"suggestions\": [\"Enviar un documento de mi caso\", \"Subir comprobante de pago\", \"Tengo una consulta\"],\\n  \"action\": \"general_inquiry\"\\n}\\n\\nDocumento: ' + ($json._fileName || 'desconocido') + '\\nConsulta del usuario: ' + ($json.chatInput || 'Analiza este documento') + '\\n\\nContenido:\\n' + ($json._extractedText || 'No se pudo extraer texto.') }}"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "={{ $json.chatInput || 'Analiza este documento' }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "977872d8-9d63-4a48-9827-2a1032ed1d6a",
+      "name": "Gemini Extract Analysis",
+      "position": [
+        8192,
+        3600
+      ],
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ 'Eres un ANALISTA DOCUMENTAL experto y asistente virtual. Analiza la imagen proporcionada.\\n\\nTu PRIMERA tarea es determinar si esta imagen es un comprobante de pago (captura de pantalla de transferencia bancaria, Mercado Pago, billetera virtual, recibo de depósito, etc).\\n\\nSi ES un comprobante de pago, extrae los datos y responde EXCLUSIVAMENTE con este JSON:\\n{\\n  \"documentType\": \"payment_receipt\",\\n  \"isValidReceipt\": true,\\n  \"isLegalDocument\": false,\\n  \"amount\": <número sin símbolos de moneda>,\\n  \"operation_id\": \"<código de transacción>\",\\n  \"transaction_date\": \"<YYYY-MM-DD>\",\\n  \"transaction_time\": \"<HH:MM>\",\\n  \"sender_name\": \"<nombre de quién envía>\",\\n  \"recipient_name\": \"<nombre de quién recibe>\",\\n  \"suggestions\": [\"Consultar estado del pago\", \"Agendar consulta\", \"Tengo otra consulta\"],\\n  \"action\": \"payment_inquiry\"\\n}\\n\\nSi NO es un comprobante de pago, pero es un documento/imagen que el usuario envía para EXPLICAR SU SITUACIÓN, clasifícalo como \"legal_document\" y responde con:\\n{\\n  \"documentType\": \"legal_document\",\\n  \"isValidReceipt\": false,\\n  \"isLegalDocument\": true,\\n  \"documentAnalysis\": \"<análisis detallado de la imagen>\",\\n  \"documentSummary\": \"<resumen en 1-2 oraciones>\",\\n  \"suggestions\": [\"Agendar consulta sobre este caso\", \"Enviar otro documento\", \"Hacer una pregunta sobre esto\"],\\n  \"action\": \"general_inquiry\"\\n}\\n\\nSi la imagen es COMPLETAMENTE IRRELEVANTE, responde con:\\n{\\n  \"documentType\": \"irrelevant\",\\n  \"isValidReceipt\": false,\\n  \"isLegalDocument\": false,\\n  \"text\": \"<explicación breve de que no puedes procesar esa imagen>\",\\n  \"suggestions\": [\"Enviar un documento de mi caso\", \"Subir comprobante de pago\", \"Tengo una consulta\"],\\n  \"action\": \"general_inquiry\"\\n}\\n\\nConsulta del usuario: ' + ($json.chatInput || 'Analiza esta imagen') + '\\n\\nIMPORTANTE: Responde SOLO con JSON válido, sin texto adicional.' }}"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "={{ $json.chatInput || 'Analiza esta imagen' }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "46c50a49-f424-48ab-a944-3a449acbf9fc",
+      "name": "Gemini Analyze Image",
+      "position": [
+        8192,
+        4000
+      ],
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Format File Extraction - v4.0 IMPROVED CLASSIFICATION\nconst raw = $input.first().json;\nconst geminiOutput = raw.text || raw.output || '';\nconst fileCtx = $('Code: Detect File Type').first().json;\nconst body = fileCtx.body || {};\nconst visitorId = body.visitorId || fileCtx.visitorId || '';\nconst sessionId = body.sessionId || fileCtx.sessionId || '';\nconst clientId = body.clientId || fileCtx.clientId || '';\nconst chatInput = body.text || fileCtx.chatInput || '';\nconst lang = body.lang || fileCtx.lang || 'es';\n\nlet audit = { isValidReceipt: false, isLegalDocument: false, documentType: 'irrelevant' };\ntry {\n  let clean = geminiOutput.trim();\n  if (clean.includes('```json')) { const m = clean.match(/```json\\s*([\\s\\S]*?)\\s*```/); if (m) clean = m[1].trim(); }\n  if (clean.startsWith('{')) { audit = JSON.parse(clean); }\n} catch(e) {\n  const lower = geminiOutput.toLowerCase();\n  if (lower.includes('legal') || lower.includes('expediente') || lower.includes('contrato') || lower.includes('multa') || lower.includes('juzgado') || lower.includes('notificacion')) {\n    audit = { isValidReceipt: false, isLegalDocument: true, documentType: 'legal_document', documentAnalysis: geminiOutput, documentSummary: geminiOutput.substring(0, 200) };\n  } else {\n    audit = { isValidReceipt: false, isLegalDocument: false, documentType: 'irrelevant', text: geminiOutput };\n  }\n}\n\nconst isReceipt = audit.isValidReceipt === true && audit.documentType === 'payment_receipt';\nconst isLegalDocument = audit.isLegalDocument === true || audit.documentType === 'legal_document';\n\nlet resultChatInput = '';\nif (isReceipt) {\n  resultChatInput = '[COMPROBANTE_VALIDO]\\nMonto: ' + (audit.amount ? '$' + audit.amount : 'No detectado') +\n    '\\nN Operacion: ' + (audit.operation_id || 'No detectado') +\n    '\\nFecha: ' + (audit.transaction_date || 'No detectada') + ' ' + (audit.transaction_time || '') +\n    '\\nRemitente: ' + (audit.sender_name || 'No detectado') +\n    '\\nDestinatario: ' + (audit.recipient_name || 'No detectado');\n} else if (isLegalDocument) {\n  resultChatInput = '[DOCUMENTO_LEGAL]\\nEl prospecto envio un documento para explicar su situacion.\\nAnalisis del documento adjunto:\\n' +\n    (audit.documentAnalysis || audit.text || geminiOutput).substring(0, 2000) +\n    (audit.documentSummary ? '\\nResumen: ' + audit.documentSummary : '') +\n    '\\n\\nMensaje del prospecto: ' + (chatInput || 'Analiza este documento');\n} else {\n  resultChatInput = '[ARCHIVO_NO_RELEVANTE]\\n' + (audit.text || geminiOutput).substring(0, 1000) +\n    '\\n\\nMensaje del prospecto: ' + (chatInput || '');\n}\n\nconst geminiText = audit.documentAnalysis || audit.text || geminiOutput.substring(0, 1500);\n\nreturn [{ json: {\n  chatInput: resultChatInput,\n  visitorId, sessionId, clientId, lang,\n  isReceipt, isLegalDocument,\n  documentType: audit.documentType || (isReceipt ? 'payment_receipt' : isLegalDocument ? 'legal_document' : 'irrelevant'),\n  documentSummary: audit.documentSummary || null,\n  receiptAmount: isReceipt ? (audit.amount || null) : null,\n  receiptOperationId: isReceipt ? (audit.operation_id || null) : null,\n  receiptDate: isReceipt ? (audit.transaction_date || null) : null,\n  receiptTime: isReceipt ? (audit.transaction_time || null) : null,\n  receiptSender: isReceipt ? (audit.sender_name || null) : null,\n  receiptRecipient: isReceipt ? (audit.recipient_name || null) : null,\n  geminiAction: audit.action || null,\n  geminiSuggestions: audit.suggestions || null,\n  geminiText,\n  hasFileAnalysis: true\n} }];"
+      },
+      "id": "a73df2a2-eb25-4af1-8a38-cb1129c4d0c3",
+      "name": "Format File Extraction",
+      "position": [
+        8544,
+        3828
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "type": "string",
+              "name": "sessionId",
+              "id": "sessionId",
+              "value": "={{ $json.body?.sessionId || $json.sessionId || '' }}"
+            },
+            {
+              "id": "chatInput",
+              "name": "chatInput",
+              "value": "={{ $json.body?.text || $json.chatInput || '' }}",
+              "type": "string"
+            },
+            {
+              "type": "string",
+              "value": "={{ $json.body?.clientId || $json.clientId || '' }}",
+              "name": "clientId",
+              "id": "clientId"
+            },
+            {
+              "type": "string",
+              "name": "visitorId",
+              "id": "visitorId",
+              "value": "={{ (() => { const v = $json.body?.visitorId || $json.visitorId || $json.body?.sessionId || $json.sessionId || ''; const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v); return isUuid ? v : '00000000-0000-0000-0000-000000000000'; })() }}"
+            },
+            {
+              "id": "lang",
+              "name": "lang",
+              "value": "={{ $json.body?.lang || $json.lang || 'es' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4538e19c-c0e4-40f5-9243-06f915fd6423",
+      "name": "Set Session ID",
+      "position": [
+        8768,
+        3900
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c",
+          "mode": "list",
+          "cachedResultName": "Bañuelos Villalba - CRM & Knowledge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "visitor_id",
+              "lookupValue": "={{ $json.visitorId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a23f70ed-8fe0-46a5-a1e2-a0b1323cb0c5",
+      "name": "Google Sheets: Read Lead",
+      "position": [
+        8992,
+        3900
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "hfZurNVG64Ok10PR",
+          "name": "google sheet"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c",
+          "mode": "list",
+          "cachedResultName": "Bañuelos Villalba - CRM & Knowledge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1945825937,
+          "mode": "list",
+          "cachedResultName": "Conocimiento",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit#gid=1945825937"
+        },
+        "options": {}
+      },
+      "id": "06f660d8-a81a-49f2-8220-396b0b6aecc3",
+      "name": "Google Sheets: Read Knowledge",
+      "position": [
+        9216,
+        3900
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "hfZurNVG64Ok10PR",
+          "name": "google sheet"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "url": "=https://csfmrrjklvawxxhddgek.supabase.co/rest/v1/n8n_chat_histories?session_id=eq.{{ $('Set Session ID').first().json.visitorId }}&select=id",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "supabaseApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Prefer",
+              "value": "count=exact"
+            },
+            {
+              "name": "Range",
+              "value": "0-0"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "0929bd94-78fa-48c5-af21-c023007e6c7d",
+      "name": "Supabase: Count Messages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        9440,
+        3900
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "gQ5A4mlgfIM82o30",
+          "name": "legal service 1"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Config: Bot & SaaS — Hardcoded configuration (replaces Supabase fetches)\nreturn [{\n  json: {\n    bot_name: 'Asistente Virtual - Bañuelos Villalba & Asociados',\n    consultation_price: '500',\n    payment_link: 'TU_LINK_DE_PAGO',\n    notification_email: 'contacto@villalba-asociados.com',\n    whatsapp_number: '+52XXXXXXXXXX',\n    phone_number: '+52XXXXXXXXXX',\n    calendar_id: '86b158a9564f8d1ac7d4bf304decb80b992450653928999bfcc5edec3c82aabc@group.calendar.google.com'\n  }\n}];"
+      },
+      "id": "9c7aff40-d092-4b38-b8f5-a75704679bfa",
+      "name": "Config: Bot & SaaS",
+      "position": [
+        9664,
+        3900
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code: Inject Lead Context — v8.0 GOOGLE SHEETS + DRIVE KNOWLEDGE\n// Replaces Supabase lead fetch, bot config, SaaS config with Google Sheets + hardcoded config\n// Now also injects knowledge_context from Google Sheets 'Conocimiento' tab\nconst session = $('Set Session ID').first().json;\nconst clientId = session.clientId || '';\nconst visitorId = session.visitorId || session.sessionId || '00000000-0000-0000-0000-000000000000';\nlet chatInput = session.chatInput || '';\nconst lang = session.lang || 'es';\n\nif (!chatInput) {\n  try {\n    const fileData = $('Format File Extraction').first().json;\n    chatInput = fileData.chatInput || '';\n  } catch(e) {}\n}\n\n// --- Lead from Google Sheets ---\nlet lead = {};\ntry {\n  const d = $('Google Sheets: Read Lead').first().json;\n  if (d && d.visitor_id) lead = d;\n} catch(e) {}\n\n// --- Bot & SaaS Config (hardcoded) ---\nlet config = {};\ntry {\n  config = $('Config: Bot & SaaS').first().json;\n} catch(e) {}\n\n// --- Knowledge from Google Sheets (Drive summaries) ---\nlet knowledgeContext = '';\ntry {\n  const knowledgeItems = [];\n  // Read all items from Google Sheets Knowledge tab\n  const allItems = $('Google Sheets: Read Knowledge').all();\n  for (const item of allItems) {\n    const d = item.json;\n    if (d && d.resumen) {\n      knowledgeItems.push('--- ' + (d.nombre_archivo || 'Documento') + ' ---\\n' + d.resumen);\n    }\n  }\n  knowledgeContext = knowledgeItems.join('\\n\\n');\n} catch(e) {}\n\n// --- Message Count ---\nlet msgCount = 0;\ntry {\n  const h = $('Supabase: Count Messages').first().json.headers;\n  if (h && h['content-range']) {\n    const m = h['content-range'].match(/\\/(\\d+)/);\n    if (m) msgCount = parseInt(m[1], 10);\n  }\n} catch(e) {}\n\nconst calendarId = config.calendar_id || '';\nconst paymentLink = config.payment_link || '';\nconst consultationPrice = config.consultation_price || '';\nconst isPaid = (lead.status === 'paid' || lead.status === 'scheduled');\n\n// Build enriched context\nlet enrichedInput = chatInput;\nconst parts = [];\n\n// Lead data — simplified to nombre_completo + whatsapp\nif (lead.nombre_completo) parts.push('Nombre: ' + lead.nombre_completo);\nelse parts.push('Nombre: NO PROPORCIONADO');\nif (lead.whatsapp) parts.push('WhatsApp: ' + lead.whatsapp);\nelse parts.push('WhatsApp: NO PROPORCIONADO');\n\nparts.push('Estado: ' + (lead.status || 'new'));\n\nif (lead.ai_summary) parts.push('Resumen previo: ' + lead.ai_summary.substring(0, 800));\n\n// Data collection hints\nconst missingData = [];\nif (!lead.nombre_completo) missingData.push('nombre completo');\nif (!lead.whatsapp) missingData.push('whatsapp');\n\nif (missingData.length > 0) {\n  parts.push('DATOS_FALTANTES: ' + missingData.join(', '));\n  if (msgCount >= 2) parts.push('INSTRUCCION: Pide los datos faltantes (' + missingData.join(', ') + ') de forma natural.');\n}\n\n// Payment context\nif (paymentLink) parts.push('PAYMENT_LINK_DISPONIBLE: ' + paymentLink);\nif (consultationPrice) parts.push('PRECIO_CONSULTA: $' + consultationPrice + ' MXN');\n\nif (parts.length > 0) {\n  enrichedInput = '[CONTEXTO - msgs: ' + msgCount + '\\n' + parts.join('\\n') + ']\\n\\n' + chatInput;\n} else {\n  enrichedInput = '[NUEVO - msgs: ' + msgCount + ']\\n\\n' + chatInput;\n}\n\nreturn [{\n  json: {\n    sessionId: session.sessionId || visitorId,\n    chatInput: enrichedInput,\n    raw_chat_input: chatInput,\n    current_ai_summary: lead.ai_summary || '',\n    clientId,\n    visitorId,\n    lang,\n    calendarId,\n    knowledge_context: knowledgeContext,\n    bot_name: config.bot_name || 'Asistente Virtual',\n    lead_name: lead.nombre_completo || '',\n    lead_whatsapp: lead.whatsapp || '',\n    lead_status: lead.status || 'new',\n    lead_id: lead.visitor_id || '',\n    is_paid: isPaid,\n    msg_count: msgCount,\n    payment_link: paymentLink,\n    consultation_price: consultationPrice,\n    notification_email: config.notification_email || '',\n    whatsapp_number: config.whatsapp_number || '',\n    phone_number: config.phone_number || ''\n  }\n}];"
+      },
+      "id": "f1c30999-1df1-466c-ba35-39dcc8e85b78",
+      "name": "Code: Inject Lead Context",
+      "position": [
+        9888,
+        3900
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=Sos '{{ $json.bot_name }}', asistente virtual ultra-profesional de Bañuelos Villalba & Asociados S.C.\n\n══════════════════════════════════════\nBASE DE CONOCIMIENTO (Documentos sincronizados desde Google Drive):\n{{ $json.knowledge_context }}\n══════════════════════════════════════\n\nTU MISIÓN:\n- Responder consultas generales usando la BASE DE CONOCIMIENTO de arriba.\n- Captar datos de potenciales clientes de forma natural y empática.\n- Detectar intenciones y ejecutar las acciones correspondientes.\n- Para verificar disponibilidad de turnos: usá la herramienta Consultar Disponibilidad.\n\nINFORMACIÓN DEL NEGOCIO:\n- Nombre: {{ $json.bot_name }}\n- Precio de consulta: ${{ $json.consultation_price }} MXN\n- WhatsApp: {{ $json.whatsapp_number }}\n- Email: {{ $json.notification_email }}\n\n🗣️ REGLA SUPREMA — LIBERTAD DE CONSULTA (v3.0):\n- El usuario SIEMPRE puede hacer preguntas generales, sin importar en qué fase esté.\n- Si el usuario pregunta sobre servicios, áreas de práctica, cómo funciona, qué hacen, horarios, ubicación, dudas legales, o CUALQUIER tema informativo → SIEMPRE respondé usando la BASE DE CONOCIMIENTO con action='general_inquiry'.\n- NUNCA interrumpas una pregunta general para empujar el pago o pedir datos.\n- NUNCA respondas con información de pago si el usuario NO pidió explícitamente pagar o agendar.\n- Si la información NO ESTÁ en la BASE DE CONOCIMIENTO, decí que consultarás con un especialista.\n\n📋 CAPTACIÓN DE LEADS (v3.0 — SIMPLIFICADO):\n- SOLO pedís DOS datos: **Nombre Completo** y **Número de WhatsApp**.\n- Si el usuario muestra intención EXPLÍCITA de AGENDAR o PAGAR y NO tenemos esos datos → pedí ambos de una vez.\n- Si msg_count >= 3 y faltan datos → pedílos de forma natural (NO interrumpiendo una consulta general).\n- NUNCA pidas datos si el usuario solo pregunta cosas generales y tiene menos de 3 mensajes.\n- Cuando el usuario proporcione datos, incluilos en lead_data.\n\n🔒 PAYWALL DE AGENDA — REGLA (v3.0):\n- Si el estado del lead (lead_status) NO es 'paid' ni 'scheduled', TENÉS PROHIBIDO:\n  a) Mostrar disponibilidad de horarios o turnos.\n  b) Ofrecer agendar una consulta.\n  c) Usar la herramienta Consultar Disponibilidad.\n  d) Mencionar que se puede agendar 'ahora' o 'ya'.\n- FLUJO DE PAGO — solo se activa cuando el usuario EXPLÍCITAMENTE pide agendar o pagar:\n  1. Si faltan datos (nombre/whatsapp) → pedí los datos. NO muestres precio ni link.\n  2. Si YA TENEMOS los datos Y NO pagó → action='payment_inquiry'. Entregá precio (${{ $json.consultation_price }} MXN) y link ({{ $json.payment_link }}).\n  3. Si el usuario dice 'ya pagué' o 'ya transferí' → EXIGIR archivo comprobante.\n\n💰 VALIDACIÓN DE COMPROBANTE (v3.0):\n- Si el usuario dice 'ya pagué' SIN adjuntar imagen/PDF → RECHAZAR.\n  Respuesta: 'Para verificar tu pago, necesitamos que subas una captura del comprobante. No aceptamos confirmación por texto.'\n- NUNCA aceptar confirmación verbal. SIEMPRE exigir archivo.\n\nANÁLISIS DE DOCUMENTOS:\n- Si el usuario envía documento/imagen marcado como [DOCUMENTO_LEGAL], leé el análisis y respondé empáticamente.\n\nDETECCIÓN DE INTENCIONES — REGLA ESTRICTA:\n1. general_inquiry — Servicios, dudas, preguntas, documentos, CUALQUIER consulta informativa. ESTA ES LA INTENCIÓN POR DEFECTO.\n2. payment_inquiry — SOLO cuando el usuario EXPLÍCITAMENTE pide pagar, agendar, o pregunta el precio para proceder.\n3. schedule_appointment — SOLO si is_paid=true Y el usuario pide agendar.\n\n⚠️ ANTE LA DUDA: usá general_inquiry.\n\nREGLAS ABSOLUTAS:\n1. SIEMPRE respondé en JSON válido: {\"text\": \"\", \"suggestions\": [], \"action\": \"\", \"lead_data\": {\"nombre_completo\": \"\", \"whatsapp\": \"\"}, \"ai_summary\": \"\"}\n2. Si is_paid=true y pide disponibilidad → USÁ Consultar Disponibilidad.\n3. Para preguntas sobre el negocio → consultá la BASE DE CONOCIMIENTO arriba.\n4. Tono: cálido, profesional.\n5. ai_summary: Resumen conciso (máx 50 palabras) actualizado en cada interacción."
+        }
+      },
+      "id": "48f55b1d-a001-4c4f-abd1-885663617417",
+      "name": "Agente Legal AI",
+      "position": [
+        10112,
+        3900
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/{{ $('Code: Inject Lead Context').first().json.calendarId }}/events",
+        "options": {}
+      },
+      "id": "46ce7948-3b4c-4421-8ba8-42315edbf15f",
+      "name": "Consultar Disponibilidad",
+      "position": [
+        10288,
+        4112
+      ],
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.3
+    },
+    {
+      "parameters": {
+        "jsCode": "// Formatear Respuesta — v12.0 GOOGLE SHEETS + KNOWLEDGE CONTEXT\n// Adapted for simplified lead model (nombre_completo + whatsapp only)\nconst ctx = $('Code: Inject Lead Context').first().json;\nconst raw = $input.first().json.output || $input.first().json.text || '';\nlet text = '', suggestions = [], action = 'general_inquiry', ld = {}, llmSummary = '';\n\ntry {\n  let c = raw.trim();\n  if (c.includes('```json')) { const m = c.match(/```json\\s*([\\s\\S]*?)\\s*```/); if (m) c = m[1].trim(); }\n  if (c.startsWith('{')) {\n    const p = JSON.parse(c);\n    text = p.text || '';\n    suggestions = p.suggestions || [];\n    action = p.action || 'general_inquiry';\n    ld = p.lead_data || {};\n    llmSummary = p.ai_summary || '';\n  } else { text = c; }\n} catch(e) { text = raw; }\n\nlet intention = action;\nlet isReceipt = false, isLegalDocument = false, documentType = '';\nlet rAmt = null, rOp = null, rDate = null, rSender = null, rRecipient = null;\nlet hasFileAnalysis = false, geminiText = '', geminiSuggestions = null, documentSummary = null;\n\ntry {\n  const f = $('Format File Extraction').first().json;\n  isReceipt = f.isReceipt || false;\n  isLegalDocument = f.isLegalDocument || false;\n  documentType = f.documentType || '';\n  documentSummary = f.documentSummary || null;\n  rAmt = f.receiptAmount; rOp = f.receiptOperationId;\n  rDate = f.receiptDate; rSender = f.receiptSender; rRecipient = f.receiptRecipient;\n  hasFileAnalysis = f.hasFileAnalysis || false;\n  geminiText = f.geminiText || '';\n  geminiSuggestions = f.geminiSuggestions || null;\n} catch(e) {}\n\n// Simplified data check: only nombre_completo + whatsapp\nconst hasName = !!(ld.nombre_completo || ctx.lead_name);\nconst hasWhatsapp = !!(ld.whatsapp || ctx.lead_whatsapp);\nconst hasAllData = hasName && hasWhatsapp;\nconst isPaid = ctx.is_paid === true;\n\nconst justProvidedData = hasAllData && (\n  (ld.nombre_completo && !ctx.lead_name) || (ld.whatsapp && !ctx.lead_whatsapp)\n);\n\nconst hasPaymentLink = !!(ctx.payment_link && ctx.payment_link.length > 5);\nconst hasPrice = !!(ctx.consultation_price && ctx.consultation_price !== '' && ctx.consultation_price !== '0');\n\nlet showPaymentCard = false;\n\n// Detect EXPLICIT payment/scheduling intent\nconst rawInput = (ctx.raw_chat_input || '').toLowerCase();\nconst userExplicitlyWantsPayment = (\n  rawInput.includes('quiero agendar') || rawInput.includes('quiero pagar') ||\n  rawInput.includes('agendar consulta') || rawInput.includes('agendar turno') ||\n  rawInput.includes('agendar cita') || rawInput.includes('como pago') ||\n  rawInput.includes('cómo pago') || rawInput.includes('link de pago') ||\n  rawInput.includes('cuanto cuesta') || rawInput.includes('cuánto cuesta') ||\n  rawInput.includes('precio de la consulta') || rawInput.includes('quiero contratar') ||\n  rawInput.includes('ya pagué') || rawInput.includes('ya transferí')\n);\n\n// --- 1. DATA GATE ---\nif (!hasAllData && (intention === 'schedule_appointment' || intention === 'payment_inquiry')) {\n    intention = 'general_inquiry';\n    text = 'Para poder avanzar con tu solicitud, necesito que me indiques tu **nombre completo** y **número de WhatsApp** en un solo mensaje. Una vez que me los pases, continuamos.';\n    suggestions = ['Dar mis datos', 'Tengo una consulta'];\n}\n\n// --- 2. PAYMENT FLOW ---\nelse if (hasAllData && !isPaid && !isReceipt && (\n    intention === 'payment_inquiry' ||\n    intention === 'schedule_appointment' ||\n    (justProvidedData && userExplicitlyWantsPayment)\n)) {\n    intention = 'payment_inquiry';\n    showPaymentCard = true;\n    const price = hasPrice ? ctx.consultation_price : 'a consultar';\n    const link = hasPaymentLink ? ctx.payment_link : '';\n    \n    text = '¡Listo! Para confirmar tu consulta, el siguiente paso es completar el pago.';\n    if (!link) {\n      text += '\\n\\nEl costo de la consulta es de **$' + price + ' MXN**. Contactanos para coordinar la forma de pago.';\n    }\n    text += '\\n\\n❗ **Importante:** Una vez que hagas la transferencia, subí el comprobante como imagen o PDF directamente a este chat. No aceptamos confirmación por texto.';\n    \n    suggestions = link ? ['❓ ¿Cómo funciona?', '📎 Ya pagué, subir comprobante'] : ['¿Cómo pago?', 'Tengo una duda'];\n}\n\n// --- 3. SCRUBBING & ANTI-HALLUCINATION ---\nif (!hasAllData && text) {\n  const price = ctx.consultation_price;\n  const priceRegex = /\\$[\\d.,]+/g;\n  let hasPriceInText = !!text.match(priceRegex);\n  if (price && !hasPriceInText) {\n    const priceStr = String(price);\n    if (text.includes(priceStr) && price > 0) hasPriceInText = true;\n  }\n  if (hasPriceInText || (ctx.payment_link && text.includes(ctx.payment_link))) {\n    text = text.replace(priceRegex, '[precio disponible al completar tus datos]');\n    if (price) {\n      const ps = String(price);\n      const escapedPrice = ps.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n      text = text.replace(new RegExp('\\\\*{0,2}' + escapedPrice + '\\\\*{0,2}', 'g'), '[precio disponible al completar tus datos]');\n    }\n    const linkRegex = /https?:\\/\\/[^\\s)]+/g;\n    text = text.replace(linkRegex, '[link disponible al completar tus datos]');\n  }\n}\n\n// --- 4. Parse date/time for schedule ---\nlet leadDate = ld.date || '';\nlet leadTime = ld.time || '';\nif (intention === 'schedule_appointment' && isPaid) {\n  if (!leadDate || !leadTime) {\n    if (!leadDate) {\n      const dateMatch = rawInput.match(/(\\d{1,2})\\s*(?:de\\s*)?(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)/i);\n      if (dateMatch) {\n        const months = {enero:'01',febrero:'02',marzo:'03',abril:'04',mayo:'05',junio:'06',julio:'07',agosto:'08',septiembre:'09',octubre:'10',noviembre:'11',diciembre:'12'};\n        leadDate = '2026-' + months[dateMatch[2].toLowerCase()] + '-' + dateMatch[1].padStart(2,'0');\n      }\n    }\n    if (!leadTime) {\n      const timeMatch = rawInput.match(/(\\d{1,2})[:.]?(\\d{2})?\\s*(?:hs|hrs|horas|h)?/i);\n      if (timeMatch) { leadTime = timeMatch[1].padStart(2,'0') + ':' + (timeMatch[2] || '00'); }\n    }\n  }\n  if (leadDate && leadTime) { action = 'schedule_processing'; }\n}\n\n// --- 5. RECEIPT HANDLING ---\nif (isReceipt) {\n  if (!hasAllData) {\n    text = '¡Recibimos tu comprobante! Antes de procesarlo, necesito tus datos.\\n\\nPor favor, indicame tu **nombre completo** y **número de WhatsApp** en un solo mensaje.';\n    suggestions = ['Dar mis datos', 'Tengo una consulta'];\n    intention = 'general_inquiry'; isReceipt = false;\n  } else {\n    const amtStr = rAmt ? '$' + rAmt + ' MXN' : ''; const opStr = rOp ? ' | Op: ' + rOp : '';\n    text = '¡Comprobante recibido!\\n\\nTu comprobante fue recibido correctamente. Nuestro equipo lo verificará y te confirmaremos a la brevedad.\\n\\nUna vez confirmado el pago, se te habilitará automáticamente la agenda para elegir tu turno.\\n\\n' + (amtStr ? 'Monto detectado: ' + amtStr + opStr : '');\n    suggestions = ['Consultar estado', '¿Cuánto tarda?', 'Tengo otra consulta'];\n    intention = 'payment_inquiry';\n  }\n}\nelse if (hasFileAnalysis && isLegalDocument) {\n  if (!suggestions.length) {\n    suggestions = geminiSuggestions || ['Agendar consulta sobre este caso', 'Enviar otro documento', 'Hacer una pregunta'];\n  }\n  intention = 'general_inquiry';\n}\nelse if (hasFileAnalysis && !isReceipt && !isLegalDocument) {\n  if (!text || text.length < 20) {\n    text = 'No pudimos identificar el archivo.\\n\\nPodés enviarnos:\\n- **Documentos de tu caso**: multas, notificaciones, contratos\\n- **Comprobante de pago**: captura de transferencia o PDF';\n  }\n  if (!suggestions.length) {\n    suggestions = ['Enviar documento', 'Subir comprobante', 'Tengo una consulta'];\n  }\n  intention = 'general_inquiry';\n}\n\n// --- 6. SMART SUGGESTIONS ---\nif (!suggestions.length) {\n  if (!hasName) {\n    suggestions = ['Conocer servicios', 'Tengo un caso', 'Quiero agendar consulta'];\n  } else if (!hasAllData) {\n    suggestions = ['Enviar documento', 'Consultar servicios', 'Agendar consulta'];\n  } else if (isPaid) {\n    suggestions = ['Agendar consulta', 'Enviar documento', 'Estado de mi pago'];\n  } else {\n    suggestions = ['Información de pago', 'Enviar documento', 'Hacer una pregunta'];\n  }\n}\n\n// --- 7. AI SUMMARY ---\nlet finalAiSummary = llmSummary || ctx.current_ai_summary || '';\nfinalAiSummary = finalAiSummary.replace(/\\[COMPROBANTE_VALIDO\\]\\s*/g, '').replace(/\\[DOCUMENTO_LEGAL\\]\\s*/g, '').replace(/\\[ARCHIVO_NO_RELEVANTE\\]\\s*/g, '');\nif (isReceipt) { finalAiSummary = '[COMPROBANTE_VALIDO] ' + finalAiSummary; }\nelse if (hasFileAnalysis && isLegalDocument && documentSummary) { finalAiSummary = finalAiSummary.trim() + ' | Doc adjunto: ' + documentSummary; }\n\nreturn [{ json: {\n  text: text || 'Disculpa, no pude procesar tu solicitud. Podés intentar de nuevo.',\n  suggestions,\n  action,\n  intention,\n  showPaymentCard,\n  confidence: 0.8,\n  clientId: ctx.clientId,\n  visitorId: ctx.visitorId,\n  sessionId: ctx.sessionId,\n  leadId: ctx.lead_id,\n  leadName: ld.nombre_completo || ctx.lead_name,\n  leadWhatsapp: ld.whatsapp || ctx.lead_whatsapp,\n  leadDate,\n  leadTime,\n  leadStatus: ctx.lead_status,\n  isPaid,\n  isExistingLead: !!ctx.lead_id,\n  botName: ctx.bot_name,\n  paymentLink: hasAllData ? ctx.payment_link : '',\n  consultationPrice: hasAllData ? ctx.consultation_price : 0,\n  notificationEmail: ctx.notification_email,\n  whatsappNumber: ctx.whatsapp_number,\n  phoneNumber: ctx.phone_number,\n  calendarId: ctx.calendarId || '',\n  isReceipt,\n  receiptAmount: rAmt,\n  receiptOperationId: rOp,\n  receiptDate: rDate,\n  receiptSender: rSender,\n  receiptRecipient: rRecipient,\n  isLegalDocument,\n  documentType,\n  documentSummary,\n  ai_summary: finalAiSummary\n} }];"
+      },
+      "id": "f1237ee6-b027-4851-99e2-890e23e0cd4d",
+      "name": "Formatear Respuesta",
+      "position": [
+        10464,
+        3900
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.intention }}",
+        "rules": {
+          "rules": [
+            {
+              "value2": "schedule_appointment"
+            },
+            {
+              "value2": "payment_inquiry",
+              "output": 1
+            },
+            {
+              "value2": "general_inquiry",
+              "output": 2
+            }
+          ]
+        }
+      },
+      "id": "29d56a90-3a2a-49f5-9033-f6d1135dc6f1",
+      "name": "Intention Router",
+      "position": [
+        10688,
+        3760
+      ],
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "workflowId": "QT0jBVJzUvG4G5uC",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "20ac82a1-e945-49f7-9f53-730ff7c0db85",
+      "name": "Execute: Agendar",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        10912,
+        3720
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "ZAXLt3lOCZjeRLbY",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "e3d82086-2a05-4800-b0cc-3d86a3ba64ee",
+      "name": "Execute: Cobros",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        10912,
+        4008
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "1c0af894-34ff-4ed5-8c2f-19ca4f55aeef",
+      "name": "Responder al Webhook",
+      "position": [
+        11136,
+        3792
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst clientId = body.clientId || '';\nconst dateStr = body.date;\n\nconst timeMin = dateStr ? dateStr + 'T00:00:00-03:00' : new Date().toISOString();\nconst timeMax = dateStr ? dateStr + 'T23:59:59-03:00' : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();\n\nreturn [{ json: { clientId, dateStr, timeMin, timeMax, body } }];"
+      },
+      "id": "7a22baec-f008-4eaf-9732-070a48ceac07",
+      "name": "Fetch Calendar Busy",
+      "position": [
+        7296,
+        4288
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/calendar/v3/calendars/86b158a9564f8d1ac7d4bf304decb80b992450653928999bfcc5edec3c82aabc@group.calendar.google.com/events",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "timeMin",
+              "value": "={{ $json.timeMin }}"
+            },
+            {
+              "name": "timeMax",
+              "value": "={{ $json.timeMax }}"
+            },
+            {
+              "name": "singleEvents",
+              "value": "true"
+            },
+            {
+              "name": "orderBy",
+              "value": "startTime"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "05aaa2b0-a44c-4515-83be-ec64688488de",
+      "name": "Calendar API Call",
+      "position": [
+        7520,
+        4288
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "credentials": {
+        "googleApi": {
+          "id": "hfZurNVG64Ok10PR",
+          "name": "google sheet"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const events = $input.first().json.items || [];\nconst body = $('Fetch Calendar Busy').first().json.body || {};\nconst dateStr = $('Fetch Calendar Busy').first().json.dateStr;\n\nconst workStart = 9;\nconst workEnd = 18;\nconst slotDuration = 60;\n\nconst busySlots = events\n  .filter(e => e.start && (e.start.dateTime || e.start.date))\n  .map(e => {\n    const start = new Date(e.start.dateTime || e.start.date + 'T00:00:00');\n    const end = new Date(e.end?.dateTime || e.end?.date + 'T23:59:00');\n    return { start: start.getHours() * 60 + start.getMinutes(), end: end.getHours() * 60 + end.getMinutes(), title: e.summary || 'Ocupado' };\n  });\n\nconst availableSlots = [];\nfor (let h = workStart; h < workEnd; h++) {\n  const slotStart = h * 60;\n  const slotEnd = slotStart + slotDuration;\n  const isOccupied = busySlots.some(b => slotStart < b.end && slotEnd > b.start);\n  if (!isOccupied) {\n    availableSlots.push(`${h.toString().padStart(2, '0')}:00`);\n  }\n}\n\nlet message = '';\nif (availableSlots.length === 0) {\n  message = dateStr \n    ? `No hay turnos disponibles el ${dateStr}. ¿Querés consultar otro día?`\n    : 'No hay turnos disponibles en los próximos 7 días. Por favor contactate directamente.';\n} else {\n  const slots = availableSlots.join(', ');\n  message = dateStr\n    ? `Turnos disponibles para el ${dateStr}: ${slots}`\n    : `Turnos disponibles próximos días: ${slots}`;\n}\n\nreturn [{ json: {\n  success: true,\n  availableSlots,\n  busySlots: busySlots.map(b => b.title),\n  message,\n  suggestions: availableSlots.slice(0, 3).map(s => `Turno a las ${s}`).concat(['Ver otro día']),\n  action: 'schedule_appointment'\n} }];"
+      },
+      "id": "5f8ab1ca-3139-482e-adb4-af47a0db3282",
+      "name": "Process Busy Slots",
+      "position": [
+        7744,
+        4288
+      ],
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "d321ffe1-42aa-45be-ab52-856ca54a328c",
+      "name": "Availability Response",
+      "position": [
+        7968,
+        4288
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "sessionKey": "={{ $('Set Session ID').first().json.visitorId }}"
+      },
+      "id": "11eff2d8-2542-4f0f-91dc-4fbc1877fea6",
+      "name": "Postgres Chat Memory",
+      "position": [
+        10048,
+        4112
+      ],
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "credentials": {
+        "postgres": {
+          "id": "lV8OTQnKFELBrnFy",
+          "name": "Postgres Supabase"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// [GUARD] - Anti-Spam + Rate Limiting + CORS + Payload Validation\n// CORS: Accept all origins\nconst item = $input.first();\nconst binary = item.binary;\nconst body = item.json.body || {};\nconst headers = item.json.headers || {};\nconst errors = [];\n\nconst origin = (headers['origin'] || headers['referer'] || '').toLowerCase();\nconst isOriginAllowed = true;\n\nconst clientId = body.clientId || body.client_id || '';\nconst visitorId = body.visitorId || body.visitor_id || '';\nconst action = body.action || '';\nconst text = body.text || '';\n\nif (!clientId) errors.push('Missing clientId');\nif (!visitorId) errors.push('Missing visitorId');\n\nconst allowedActions = ['user_message', 'file_upload', 'get_availability', 'user_abandoned_page'];\nif (action && !allowedActions.includes(action)) {\n  errors.push('Invalid action: ' + action);\n}\n\nif (text && text.length > 2000) {\n  errors.push('Text exceeds 2000 character limit (' + text.length + ' chars)');\n}\n\nconst staticData = $getWorkflowStaticData('global');\nif (!staticData.rateLimits) staticData.rateLimits = {};\n\nconst now = Date.now();\nconst WINDOW_MS = 60000;\nconst MAX_PER_VISITOR = 10;\nconst MAX_PER_IP = 30;\n\nif (!staticData.cleanupCounter) staticData.cleanupCounter = 0;\nstaticData.cleanupCounter++;\nif (staticData.cleanupCounter >= 100) {\n  staticData.cleanupCounter = 0;\n  for (const key of Object.keys(staticData.rateLimits)) {\n    staticData.rateLimits[key] = staticData.rateLimits[key].filter(ts => now - ts < WINDOW_MS);\n    if (staticData.rateLimits[key].length === 0) delete staticData.rateLimits[key];\n  }\n}\n\nlet rateLimited = false;\nif (visitorId) {\n  const vKey = 'v_' + visitorId;\n  if (!staticData.rateLimits[vKey]) staticData.rateLimits[vKey] = [];\n  staticData.rateLimits[vKey] = staticData.rateLimits[vKey].filter(ts => now - ts < WINDOW_MS);\n  if (staticData.rateLimits[vKey].length >= MAX_PER_VISITOR) {\n    rateLimited = true;\n    errors.push('Rate limit exceeded: ' + MAX_PER_VISITOR + ' msgs/min per visitor');\n  } else {\n    staticData.rateLimits[vKey].push(now);\n  }\n}\n\nconst clientIp = headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown';\nif (clientIp !== 'unknown') {\n  const ipKey = 'ip_' + clientIp.split(',')[0].trim();\n  if (!staticData.rateLimits[ipKey]) staticData.rateLimits[ipKey] = [];\n  staticData.rateLimits[ipKey] = staticData.rateLimits[ipKey].filter(ts => now - ts < WINDOW_MS);\n  if (staticData.rateLimits[ipKey].length >= MAX_PER_IP) {\n    rateLimited = true;\n    errors.push('Rate limit exceeded: ' + MAX_PER_IP + ' reqs/min per IP');\n  } else {\n    staticData.rateLimits[ipKey].push(now);\n  }\n}\n\nconst passed = errors.length === 0;\nconst statusCode = rateLimited ? 429 : (passed ? 200 : 400);\n\nconst result = {\n  json: {\n    body,\n    headers,\n    _guard: { passed, statusCode, errors, rateLimited, origin: origin || 'none', clientIp, timestamp: new Date().toISOString() }\n  }\n};\nif (binary && Object.keys(binary).length > 0) {\n  result.binary = binary;\n}\nreturn [result];"
+      },
+      "name": "Guard (CORS All)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6624,
+        4400
+      ],
+      "id": "5d969cff-01c0-485f-838c-1daf302113ae"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "caseSensitive": true,
+            "typeValidation": "loose",
+            "leftValue": "",
+            "includeNested": false
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "guard-check",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "leftValue": "={{ $json._guard.passed }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "07925e9f-64a7-4476-a4d2-2c4091a02c2a",
+      "name": "Guard: Passed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        6848,
+        4400
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ error: true, statusCode: $json._guard.statusCode, message: $json._guard.rateLimited ? \"Too many requests. Please wait.\" : \"Invalid request: \" + $json._guard.errors.join(\", \"), retryAfter: $json._guard.rateLimited ? 60 : undefined }) }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "aed17b9f-44d8-4a07-a58c-5c7e7a1492ec",
+      "name": "Guard: Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        7072,
+        4496
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst metadata = typeof body.metadata === 'string' ? JSON.parse(body.metadata) : (body.metadata || {});\n\nreturn [{\n  json: {\n    visitorId: body.visitorId || metadata.visitorId || '',\n    clientId: body.clientId || metadata.clientId || '',\n    abandonmentData: {\n      url: metadata.url || '',\n      timestamp: metadata.timestamp || new Date().toISOString(),\n      source: metadata.source || 'unknown',\n      medium: metadata.medium || 'unknown'\n    }\n  }\n}];"
+      },
+      "id": "d1229671-838d-4a54-bb67-f143d38420dd",
+      "name": "Handle Abandonment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7296,
+        4480
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c",
+          "mode": "list",
+          "cachedResultName": "Bañuelos Villalba - CRM & Knowledge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2023127129,
+          "mode": "list",
+          "cachedResultName": "Abandonments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit#gid=2023127129"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "visitor_id",
+              "displayName": "visitor_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "client_id",
+              "displayName": "client_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "url",
+              "displayName": "url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "medium",
+              "displayName": "medium",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b8eb4b80-e7a5-495d-81eb-a79cb8e555d1",
+      "name": "Google Sheets: Log Abandonment",
+      "position": [
+        7520,
+        4480
+      ],
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "hfZurNVG64Ok10PR",
+          "name": "google sheet"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"success\": true, \"action\": \"abandonment_logged\"}",
+        "options": {}
+      },
+      "id": "d96833ab-785a-4e19-a05e-503201374cff",
+      "name": "Abandonment Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        7744,
+        4480
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c",
+          "mode": "list",
+          "cachedResultName": "Bañuelos Villalba - CRM & Knowledge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgPSzZIINMkcHFjcI5Ws7OhieeHMrMbW6R3Hhxl4h8c/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [
+            "visitor_id"
+          ],
+          "schema": [
+            {
+              "id": "visitor_id",
+              "displayName": "visitor_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "client_id",
+              "displayName": "client_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "nombre_completo",
+              "displayName": "nombre_completo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Columna 4",
+              "displayName": "Columna 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "whatsapp",
+              "displayName": "whatsapp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ai_summary",
+              "displayName": "ai_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "bca9435f-5cfb-4aac-bbef-ac4025be1494",
+      "name": "Google Sheets: Upsert Lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        10688,
+        4016
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleApi": {
+          "id": "hfZurNVG64Ok10PR",
+          "name": "google sheet"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "google/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "google/gemini-2.5-flash"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        8264,
+        3824
+      ],
+      "id": "e778c9e1-c541-4494-95c5-78a84e696b22",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "sMHMFIWMYFDGUI7H",
+          "name": "Openrouter GEMINI"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "chat": {
+      "main": [
+        [
+          {
+            "node": "Guard (CORS All)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router de Acción": {
+      "main": [
+        [
+          {
+            "node": "Code: Detect File Type",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Session ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fetch Calendar Busy",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Abandonment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Detect File Type": {
+      "main": [
+        [
+          {
+            "node": "Is PDF?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is PDF?": {
+      "main": [
+        [
+          {
+            "node": "Extract PDF Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini Analyze Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract PDF Text": {
+      "main": [
+        [
+          {
+            "node": "Format Extracted PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Extracted PDF": {
+      "main": [
+        [
+          {
+            "node": "Gemini Extract Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Extract Analysis": {
+      "main": [
+        [
+          {
+            "node": "Format File Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Analyze Image": {
+      "main": [
+        [
+          {
+            "node": "Format File Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format File Extraction": {
+      "main": [
+        [
+          {
+            "node": "Set Session ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Session ID": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Read Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Lead": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Read Knowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Read Knowledge": {
+      "main": [
+        [
+          {
+            "node": "Supabase: Count Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase: Count Messages": {
+      "main": [
+        [
+          {
+            "node": "Config: Bot & SaaS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config: Bot & SaaS": {
+      "main": [
+        [
+          {
+            "node": "Code: Inject Lead Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code: Inject Lead Context": {
+      "main": [
+        [
+          {
+            "node": "Agente Legal AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Legal AI": {
+      "main": [
+        [
+          {
+            "node": "Formatear Respuesta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar Disponibilidad": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Legal AI",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Respuesta": {
+      "main": [
+        [
+          {
+            "node": "Intention Router",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets: Upsert Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intention Router": {
+      "main": [
+        [
+          {
+            "node": "Execute: Agendar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Execute: Cobros",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder al Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Agendar": {
+      "main": [
+        [
+          {
+            "node": "Responder al Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute: Cobros": {
+      "main": [
+        [
+          {
+            "node": "Responder al Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Calendar Busy": {
+      "main": [
+        [
+          {
+            "node": "Calendar API Call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar API Call": {
+      "main": [
+        [
+          {
+            "node": "Process Busy Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Busy Slots": {
+      "main": [
+        [
+          {
+            "node": "Availability Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Legal AI",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard (CORS All)": {
+      "main": [
+        [
+          {
+            "node": "Guard: Passed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Passed?": {
+      "main": [
+        [
+          {
+            "node": "Router de Acción",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Guard: Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Abandonment": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Log Abandonment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Log Abandonment": {
+      "main": [
+        [
+          {
+            "node": "Abandonment Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Gemini Extract Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Gemini Analyze Image",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agente Legal AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9826c52f7239649d4bc05220e131b0093cedee950ef644734f717db2023ab237"
+  }
+}

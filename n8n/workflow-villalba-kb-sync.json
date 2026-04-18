@@ -1,0 +1,233 @@
+{
+  "name": "Sincronizador de Conocimiento: Drive -> Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron",
+      "name": "Cada 1 Hora",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "folderId": "LINK_A_TU_CARPETA_DE_DRIVE",
+        "options": {
+          "q": "mimeType = 'application/pdf' or mimeType = 'application/vnd.google-apps.document'"
+        }
+      },
+      "id": "drive-list",
+      "name": "Google Drive: Listar Archivos",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentId": "ID_DE_TU_SPREADSHEET",
+        "sheetName": "Conocimiento"
+      },
+      "id": "sheets-read-sync",
+      "name": "Google Sheets: Ver Sincronizados",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const driveFiles = $node[\"Google Drive: Listar Archivos\"].json.files || [];\nconst syncedFiles = $node[\"Google Sheets: Ver Sincronizados\"].json || [];\n\nreturn driveFiles.filter(df => {\n  const found = syncedFiles.find(sf => sf.file_id === df.id);\n  return !found || new Date(df.modifiedTime) > new Date(found.last_sync);\n});"
+      },
+      "id": "filter-modified",
+      "name": "Filtrar Nuevos/Modificados",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1020,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "fileId": "={{ $json.id }}"
+      },
+      "id": "drive-download",
+      "name": "Descargar Archivo",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "extract-text",
+      "name": "Extraer Texto",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "modelDescription": "Gemini 1.5 Flash",
+        "prompt": "RESUME EJECUTIVO PARA CHATBOT LEGAL:\n\nDocumento: {{ $node[\"Filtrar Nuevos/Modificados\"].json.name }}\n\nContenido: {{ $json.text }}\n\nInstrucciones:\n1. Extrae los puntos clave que un cliente preguntaría.\n2. Si hay precios o procesos, lístalos claramente.\n3. Sé conciso pero completo.",
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "id": "gemini-summarize",
+      "name": "Gemini: Resumir Conocimiento",
+      "type": "n8n-nodes-base.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": "ID_DE_TU_SPREADSHEET",
+        "sheetName": "Conocimiento",
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": [
+            {
+              "column": "file_id",
+              "value": "={{ $node[\"Filtrar Nuevos/Modificados\"].json.id }}"
+            },
+            {
+              "column": "nombre_archivo",
+              "value": "={{ $node[\"Filtrar Nuevos/Modificados\"].json.name }}"
+            },
+            {
+              "column": "resumen",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "column": "last_sync",
+              "value": "={{ $now }}"
+            }
+          ],
+          "matchingColumns": [
+            "file_id"
+          ]
+        }
+      },
+      "id": "sheets-upsert-kb",
+      "name": "Guardar en Conocimiento",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1900,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cada 1 Hora": {
+      "main": [
+        [
+          {
+            "node": "Google Drive: Listar Archivos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive: Listar Archivos": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets: Ver Sincronizados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets: Ver Sincronizados": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Nuevos/Modificados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Nuevos/Modificados": {
+      "main": [
+        [
+          {
+            "node": "Descargar Archivo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar Archivo": {
+      "main": [
+        [
+          {
+            "node": "Extraer Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text": {
+      "main": [
+        [
+          {
+            "node": "Gemini: Resumir Conocimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini: Resumir Conocimiento": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Conocimiento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
