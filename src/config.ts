@@ -10,10 +10,10 @@ export const config = {
         address: "Torre Omega, Centro Mayor, Calz Zavaleta, Puebla",
         mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.68832049!2d-98.2435!3d19.0553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDAzJzE5LjEiTiA5OMKwMTQnNDIuNiJX!5e0!3m2!1sen!2smx!4v1713360000000!5m2!1sen!2smx",
     },
-    landingClientId: "villalba-asociados",
+    landingClientId: import.meta.env.VITE_LANDING_CLIENT_ID || "villalba-asociados",
     supabase: {
-        url: "https://csfmrrjklvawxxhddgek.supabase.co",
-        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZm1ycmprbHZhd3h4aGRkZ2VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMDAxNjUsImV4cCI6MjA4NTU3NjE2NX0.JZvPjloBM70iuC2wfRHTnVEsGwZvdMEadi1GMFdobNk",
+        url: import.meta.env.VITE_SUPABASE_URL || "https://csfmrrjklvawxxhddgek.supabase.co",
+        anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZm1ycmprbHZhd3h4aGRkZ2VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMDAxNjUsImV4cCI6MjA4NTU3NjE2NX0.JZvPjloBM70iuC2wfRHTnVEsGwZvdMEadi1GMFdobNk",
     },
     dynamicContent: {
         stats: {
