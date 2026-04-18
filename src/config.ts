@@ -1,3 +1,5 @@
+import testimonialsData from '../reseñas.json';
+
 export const config = {
     branding: {
         name: "Bañuelos Villalba & Asociados S.C.",
@@ -129,76 +131,11 @@ export const config = {
             }
         ]
     },
-    testimonials: [
-        {
-            name: "Dali Itzel Mariscal Bucio",
-            role: "Google Maps Review",
-            text: "Todos los que busquen calidad y excelencia, este es el mejor lugar. Lo recomiendo ampliamente, resolvieron todas mis dudas fácilmente, siempre dando las mejores opciones.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a-/ALV-UjWhigOZJfqNOes8LitHZ5ZMsa36lNwvrKafU-I4Zf_0_KgapNMP=w29-h29-p-rp-mo-br100"
-        },
-        {
-            name: "LUIS CARLOS ORTEGA",
-            role: "Google Maps Review",
-            text: "Recomiendo ampliamente este despacho contable y fiscal por su profesionalismo, atención personalizada y conocimiento actualizado en materia tributaria. Ideales para quienes buscan tranquilidad.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a-/ALV-UjV4xoAeJP0V0_zM58AJsptpGQuciAqwlnkdVSqIW19LXWbc--X3=w29-h29-p-rp-mo-ba4-br100"
-        },
-        {
-            name: "Diego A Ponce",
-            role: "Google Maps Review",
-            text: "¡Excelente despacho! Superó mis expectativas en todos los aspectos. La atención personalizada y la comunicación constante me brindaron tranquilidad durante todo el proceso.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a-/ALV-UjXLi619eBeO54TdLEPJEh4uRfLbaANTOmXxMmYFyF0lSAK4eIaR=w29-h29-p-rp-mo-ba3-br100"
-        },
-        {
-            name: "Josefina Bucio Flores",
-            role: "Google Maps Review",
-            text: "¡Excelente servicio! La atención es muy certera, los trabajadores son muy amables y atentos, en todo momento te hacen sentir en confianza y seguros.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a/ACg8ocIIHYYxdmoBEI9VyybrE2FCjyHCBWI3lwOLAhdir8ZiyvSOag=w29-h29-p-rp-mo-br100"
-        },
-        {
-            name: "Anahi V Villalba B",
-            role: "Google Maps Review",
-            text: "La atención, asesoría y compromiso por parte de Bañuelos Villalba & Asociados es de excelencia. Muy recomendables.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a-/ALV-UjV3TfvUzMfXgDTf38X4IDUyMpkLgjr0GDp4CgrBugNV0AL-w4bHBA=w29-h29-p-rp-mo-br100"
-        },
-        {
-            name: "Fernando del Ángel",
-            role: "Google Maps Review",
-            text: "Expertos y especialistas, recomendación 100%. Resultados a la brevedad y muy profesionales.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a-/ALV-UjW2_FCSE4rcQ_GqabFs87x1TchF4gh8Wq3_QVdyRBJbp09mcd1g=w29-h29-p-rp-mo-br100"
-        },
-        {
-            name: "Obag Otein",
-            role: "Google Maps Review",
-            text: "Excelente servicio, personal muy preparado y atento, súper recomendable.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a/ACg8ocKb1OhmMp_O2s0Uj2kShFM1JGkOZn7J4jPezbli1ZUKWMwMLu0=w29-h29-p-rp-mo-br100"
-        },
-        {
-            name: "Yoz Rul",
-            role: "Google Maps Review",
-            text: "Excelente servicio y muy buena atención, super recomendable.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a/ACg8ocJjPJjvUaRC3bRHadvBJONwqDdjrUmvTtxTRZHw425xc82BVA=w29-h29-p-rp-mo-ba2-br100"
-        },
-        {
-            name: "Carlos Rivera",
-            role: "Google Maps Review",
-            text: "Un equipo altamente capacitado. Su enfoque en la prevención de riesgos legales nos ha ahorrado muchos problemas y tiempo. Muy satisfecha con su labor contable.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a/ACg8ocK-Z1-lM-P1-lM-P1-lM-P1-lM-P1-lM-P1=w32-h32"
-        },
-        {
-            name: "Mariana Lopez",
-            role: "Google Maps Review",
-            text: "La mejor asesoría fiscal en Puebla. Claros, directos y muy profesionales. Gracias a ellos pudimos regularizar nuestra situación ante el SAT sin contratiempos.",
-            stars: 5,
-            avatar: "https://lh3.googleusercontent.com/a/ACg8ocK-X2-lM-P2-lM-P2-lM-P2-lM-P2-lM-P2=w32-h32"
-        }
-    ]
+    testimonials: testimonialsData.map(r => ({
+        name: r.nombre,
+        role: "Google Maps Review",
+        text: r.comentario || "Calificación de 5 estrellas con excelencia en el servicio.",
+        stars: r.estrellas,
+        avatar: r.avatar_url.startsWith('http') ? r.avatar_url : `/${r.avatar_url}`
+    }))
 };

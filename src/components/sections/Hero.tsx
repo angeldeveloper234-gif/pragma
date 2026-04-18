@@ -69,10 +69,10 @@ export function Hero() {
                         </p>
 
                         {/* Actions */}
-                        <div className="flex flex-col lg:flex-row gap-5 items-center justify-center">
+                        <div className="flex flex-col lg:flex-row gap-5 items-center justify-center w-full max-w-lg lg:max-w-none">
                             <Button
                                 size="lg"
-                                className="bg-gradient-to-r from-[#e3b873] to-[#c69955] text-black hover:opacity-90 rounded-full px-10 h-16 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300 shadow-[0_15px_40px_-10px_rgba(198,153,85,0.4)]"
+                                className="w-full lg:w-auto bg-gradient-to-r from-[#e3b873] to-[#c69955] text-black hover:opacity-90 rounded-full px-10 h-16 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300 shadow-[0_15px_40px_-10px_rgba(198,153,85,0.4)]"
                                 onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Agendar Consulta Privada
@@ -82,7 +82,7 @@ export function Hero() {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="text-white hover:text-black hover:bg-white rounded-full px-10 h-16 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300 border border-white/20 bg-black/10 backdrop-blur-sm"
+                                className="w-full lg:w-auto text-white hover:text-black hover:bg-white rounded-full px-10 h-16 text-[11px] tracking-[0.2em] uppercase font-bold transition-all duration-300 border border-white/20 bg-black/10 backdrop-blur-sm"
                                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                             >
                                 Conocer Servicios
