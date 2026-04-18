@@ -6,6 +6,7 @@ interface LexFlowOptions {
     container?: HTMLElement;
     supabaseUrl?: string;
     supabaseKey?: string;
+    onReady?: () => void;
 }
 
 interface LexFlowConfig {
