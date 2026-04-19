@@ -43,7 +43,7 @@ export function Features() {
                             <div className="absolute top-0 left-0 w-[2px] h-0 bg-[#c69955] group-hover:h-full transition-all duration-700 z-20" />
 
                             {/* Image Header */}
-                            <div className="aspect-[21/9] overflow-hidden relative">
+                            <div className="aspect-video md:aspect-[21/9] overflow-hidden relative">
                                 <img
                                     src={item.image}
                                     alt={item.title}

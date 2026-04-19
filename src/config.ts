@@ -97,7 +97,7 @@ export const config = {
                 summary: "Reestructuración total de actas de asamblea y gobierno corporativo para una de las desarrolladoras más grandes de la región.",
                 context: "La empresa enfrentaba riesgos por falta de formalidad en sus procesos de toma de decisiones y dispersión patrimonial que ponía en duda la validez de acuerdos previos.",
                 result: "Se logró la unificación de criterios, protección de socios minoritarios y un blindaje del 100% ante futuras contingencias legales y operativas.",
-                image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1200"
+                image: "/images/assets/blindaje-corporativo.png"
             },
             {
                 title: "Optimización Fiscal de Cadena Comercial",
@@ -107,7 +107,7 @@ export const config = {
                 summary: "Reducción de la carga tributaria en un 22% mediante la implementación de estímulos fiscales legales y reordenamiento contable.",
                 context: "Pago excesivo de impuestos por procesos ineficientes y falta de aprovechamiento de beneficios sectoriales que mermaban la competitividad operativa.",
                 result: "Flujo de caja optimizado y cumplimiento total ante el SAT, logrando una estructura financiera más robusta y líquida para la expansión del grupo.",
-                image: "https://images.unsplash.com/photo-1554469384-e58fac16e23a?q=80&w=1200"
+                image: "/images/assets/estrategia-fiscal.png"
             },
             {
                 title: "Defensa ante Auditoría Federal Directa",
@@ -117,7 +117,7 @@ export const config = {
                 summary: "Anulación de crédito fiscal de 8.5 mdp emitido por la autoridad federal mediante juicio contencioso administrativo.",
                 context: "Imputación errónea de ingresos por parte de la autoridad durante una auditoría domiciliaria compleja que amenazaba la estabilidad de la empresa.",
                 result: "Sentencia definitiva y firme a favor del cliente, con condonación total de multas y recargos, sentando un precedente en la defensa de sus derechos.",
-                image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1200"
+                image: "/images/assets/defensa-fiscal.png"
             },
             {
                 title: "Compliance Laboral para Fintech",
@@ -127,7 +127,7 @@ export const config = {
                 summary: "Implementación de NOM-035 y esquemas de teletrabajo para 150 empleados distribuidos en el país.",
                 context: "Desfase en la normativa laboral vigente y riesgos de multas de la STPS por falta de protocolos preventivos y manuales de operación digital.",
                 result: "Cumplimiento al 100% de la normativa, reducción de rotación de talento y blindaje patronal ante demandas injustificadas durante la transición híbrida.",
-                image: "https://images.unsplash.com/photo-1521791136364-798a7bc0d262?q=80&w=1200"
+                image: "/images/assets/cumplimiento-laboral.png"
             }
         ]
     },

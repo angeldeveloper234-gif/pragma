@@ -52,7 +52,7 @@ export function About() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden">
                         <img
-                            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200"
+                            src="/images/assets/nosotros-hero.png"
                             alt="Oficinas Bañuelos Villalba"
                             className="w-full h-full object-cover grayscale opacity-50"
                         />

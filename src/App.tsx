@@ -66,7 +66,6 @@ function App() {
                     </Routes>
                     <Footer />
                     <ChatbotManager />
-                    <StickyCallBar />
                 </div>
             </Router>
         </UserProvider>

@@ -23,7 +23,7 @@ const PILLARS = [
                 items: ["Asesoría preventiva obrero-patronal", "Auditoría de cumplimiento NOM-035", "Estrategia para relaciones laborales de alto nivel", "Defensa en juicios laborales"]
             }
         ],
-        image: "https://images.unsplash.com/photo-1589814013968-0ad9e2cd4b21?q=80&w=1200"
+        image: "/images/assets/blindaje-corporativo.png"
     },
     {
         id: "accounting",
@@ -45,7 +45,7 @@ const PILLARS = [
                 items: ["Gestión contable mensual y anual", "Administración de nómina y contribuciones locales", "Presentación de declaraciones informativas", "Contabilidad electrónica y registros digitales"]
             }
         ],
-        image: "https://images.unsplash.com/photo-1554475900-0a0350e3fc7b?q=80&w=1200"
+        image: "/images/assets/estrategia-fiscal.png"
     }
 ];
 
