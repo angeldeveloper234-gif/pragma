@@ -14,6 +14,8 @@ import { Footer } from "@/components/sections/Footer";
 import { config } from "@/config";
 import { StickyCallBar } from "@/components/features/StickyCallBar";
 import LegalBotWidget from "@/components/LegalBotWidget";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
+
 
 function ScrollToTop() {
     const { pathname } = useLocation();
@@ -38,13 +40,17 @@ function ChatbotManager() {
     }), [clientId, name, email]);
 
     return (
-        <LegalBotWidget
-            botId={config.landingClientId}
-            metadata={metadata}
-            supabaseUrl={config.supabase.url}
-            supabaseKey={config.supabase.anonKey}
-        />
+        <>
+            <WhatsAppWidget />
+            <LegalBotWidget
+                botId={config.landingClientId}
+                metadata={metadata}
+                supabaseUrl={config.supabase.url}
+                supabaseKey={config.supabase.anonKey}
+            />
+        </>
     );
+
 }
 
 function App() {
