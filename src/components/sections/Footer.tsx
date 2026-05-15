@@ -63,12 +63,15 @@ export function Footer() {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-12 gap-8">
+                <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-12 gap-8 mb-12">
                     <p className="text-zinc-700 text-[10px] font-sans uppercase tracking-[0.2em] text-center md:text-left">
                         © {new Date().getFullYear()} {branding.name}. Todos los derechos reservados.
                     </p>
-                    <p className="text-zinc-800 text-[10px] font-sans uppercase tracking-[0.2em]">
-                        by <a href="https://angelstudio.design" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Angel Design Studio</a>
+                </div>
+
+                <div className="flex flex-col items-center justify-center pt-12 border-t border-white/5">
+                    <p className="text-zinc-500 text-[12px] font-sans uppercase tracking-[0.4em] flex items-center gap-2">
+                        Hecho por <a href="https://www.angelstudio.design/" target="_blank" rel="noopener noreferrer" className="text-[#c69955] font-bold hover:text-white hover:scale-105 transition-all duration-300 transform inline-block">Angel Design Studio</a>
                     </p>
                 </div>
             </div>
