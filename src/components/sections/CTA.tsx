@@ -17,12 +17,12 @@ export function CTA() {
                 >
                     <ShieldCheck size={48} className="mx-auto mb-8 text-[#c69955] opacity-50" />
 
-                    <h2 className="text-5xl md:text-8xl font-display mb-10 leading-[0.9] tracking-tighter">
-                        ¿Su patrimonio requiere una <span className="text-[#c69955] italic underline decoration-1 underline-offset-8">Defensa de Élite?</span>
+                    <h2 className="text-4xl md:text-6xl font-display mb-10 leading-[1.1] tracking-tighter">
+                        ¿La Autoridad Fiscal Ya Actuó <span className="text-[#c69955] italic underline decoration-1 underline-offset-8">Contra Su Empresa?</span>
                     </h2>
 
-                    <p className="text-xl md:text-2xl text-zinc-400 mb-16 font-sans font-light leading-relaxed max-w-2xl mx-auto">
-                        No deje su seguridad jurídica al azar. Iniciamos nuestra estrategia de blindaje en menos de 24 horas.
+                    <p className="text-lg md:text-xl text-zinc-400 mb-16 font-sans font-light leading-relaxed max-w-2xl mx-auto">
+                        No espere a que el daño sea irreversible. Cada día sin defensa es un día que la autoridad avanza. Iniciamos su estrategia de protección en menos de 24 horas.
                     </p>
 
                     <div className="flex flex-col items-center gap-8">
@@ -31,7 +31,7 @@ export function CTA() {
                             className="h-20 px-12 bg-white text-black hover:bg-[#c69955] hover:text-white rounded-none text-sm tracking-[0.3em] uppercase font-bold transition-all duration-500 shadow-2xl"
                             onClick={() => window.location.href = '#contact'}
                         >
-                            Solicitar Triaje de Urgencia <ArrowRight className="ml-4 w-5 h-5" />
+                            Solicitar Evaluación de Urgencia <ArrowRight className="ml-4 w-5 h-5" />
                         </Button>
 
                         <div className="flex items-center gap-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">

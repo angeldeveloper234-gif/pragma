@@ -1,7 +1,9 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { Clock, User, ChevronRight, ChevronLeft } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export const ALL_POSTS = [
     {
@@ -131,7 +133,7 @@ export function Blog() {
                             viewport={{ once: true }}
                             className="group relative"
                         >
-                            <Link to={`/blog/inteligencia-corporativa-era-digital`} className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-white/10 overflow-hidden bg-white/[0.02]">
+                            <Link href={`/blog/inteligencia-corporativa-era-digital`} className="grid grid-cols-1 lg:grid-cols-12 gap-0 border border-white/10 overflow-hidden bg-white/[0.02]">
                                 <div className="lg:col-span-7 aspect-[16/9] lg:aspect-auto overflow-hidden">
                                     <img 
                                         src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=1200" 
@@ -167,7 +169,7 @@ export function Blog() {
                                 transition={{ delay: i * 0.1 }}
                                 className="group cursor-pointer"
                             >
-                                <Link to={`/blog/${post.slug}`} className="block">
+                                <Link href={`/blog/${post.slug}`} className="block">
                                     <div className="aspect-[16/10] bg-zinc-900 mb-10 overflow-hidden relative border border-white/5">
                                         <img src={post.image} alt={post.title} className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:scale-110 group-hover:grayscale-0" />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

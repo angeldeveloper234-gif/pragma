@@ -1,4 +1,6 @@
 
+'use client';
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { config } from "@/config";
 
@@ -14,9 +16,9 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-    const [name, setName] = useState(() => localStorage.getItem("user_name") || "");
-    const [email, setEmail] = useState(() => localStorage.getItem("user_email") || "");
-    const [clientId, setClientId] = useState(() => localStorage.getItem("client_id") || config.landingClientId);
+    const [name, setName] = useState(() => typeof window !== "undefined" ? localStorage.getItem("user_name") || "" : "");
+    const [email, setEmail] = useState(() => typeof window !== "undefined" ? localStorage.getItem("user_email") || "" : "");
+    const [clientId, setClientId] = useState(() => typeof window !== "undefined" ? localStorage.getItem("client_id") || config.landingClientId : config.landingClientId);
 
     useEffect(() => {
         if (name) localStorage.setItem("user_name", name);

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Scale, TrendingUp, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 const PILLARS = [
     {
@@ -130,7 +130,7 @@ export function Services() {
                             <span className="italic font-light text-[#c69955]">su futuro patrimonial?</span>
                         </h2>
                         <Link
-                            to="/#contact"
+                            href="/#contact"
                             className="inline-block border border-[#c69955] text-[#c69955] px-20 py-8 text-[11px] tracking-[0.5em] font-bold uppercase transition-all hover:bg-[#c69955] hover:text-black"
                         >
                             Agendar Análisis Privado

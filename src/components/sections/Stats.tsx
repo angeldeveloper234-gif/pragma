@@ -3,27 +3,27 @@ import { ShieldCheck, UserCheck, Lock } from "lucide-react";
 
 const pillars = [
     {
-        title: "Experiencia Comprobada",
-        desc: "Años de trayectoria respaldando a empresas y particulares con resultados tangibles.",
+        title: "Origen Institucional",
+        desc: "Socios formados en PRODECON y TFJA — conocemos los criterios internos de la autoridad.",
         icon: ShieldCheck
     },
     {
-        title: "Atención Personalizada",
-        desc: "Cada caso es único; diseñamos estrategias a la medida de sus necesidades.",
+        title: "Casos de Alto Impacto",
+        desc: "Defensa exitosa de créditos fiscales de gran cuantía con sentencias favorables firmes.",
         icon: UserCheck
     },
     {
-        title: "Confidencialidad Absoluta",
-        desc: "Discreción total en el manejo de su información legal y financiera.",
+        title: "Acción Inmediata",
+        desc: "Restablecimiento de Sellos Digitales y liberación de cuentas bancarias en tiempo récord.",
         icon: Lock
     }
 ];
 
 export function Stats() {
     return (
-        <section id="firma" className="py-32 bg-[#0F1216]">
+        <section id="firma" className="py-16 md:py-32 bg-[#0F1216]">
             <div className="container mx-auto px-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
                     {/* Left: Text Content */}
                     <motion.div
@@ -34,15 +34,23 @@ export function Stats() {
                     >
                         <span className="text-[#c69955] font-sans text-[10px] tracking-[0.4em] uppercase font-bold mb-6 block">Nuestra Firma</span>
                         <h2 className="text-4xl md:text-5xl font-display text-white mb-10 leading-tight">
-                            Visión Integral para <br />
-                            <span className="italic font-light text-[#c69955]">Desafíos Complejos</span>
+                            Conocimiento Profundo de la Autoridad. <br />
+                            <span className="italic font-light text-[#c69955]">Defensa Sin Concesiones.</span>
                         </h2>
 
-                        <p className="text-zinc-400 font-sans font-light text-lg md:text-xl leading-relaxed mb-12">
-                            Somos una firma multidisciplinaria dedicada a ofrecer soluciones de alto nivel. Entendemos que en el entorno empresarial actual, las decisiones legales y contables están profundamente entrelazadas.
+                        <p className="text-zinc-400 font-sans font-light text-lg md:text-xl leading-relaxed mb-8">
+                            Con más de 10 años de experiencia en el sector jurídico fiscal, nuestra trayectoria se fundamenta en un conocimiento profundo de cómo operan las autoridades fiscales y administrativas desde adentro.
                             <br /><br />
-                            Por ello, nuestro equipo de especialistas trabaja en sinergia para blindar sus operaciones, mitigar riesgos y asegurar el cumplimiento normativo con los más altos estándares de ética y profesionalismo.
+                            Los socios de la firma forjaron su experiencia en la Procuraduría de la Defensa del Contribuyente (PRODECON) y el Tribunal Federal de Justicia Administrativa (TFJA), complementada con una trayectoria consolidada en los despachos fiscales más exigentes del país.
+                            <br /><br />
+                            Esa experiencia integral nos permite gestionar casos de alto impacto económico. Hemos obtenido sentencias favorables que anulan determinaciones millonarias de la autoridad, protegiendo efectivamente el patrimonio y la viabilidad financiera de nuestros clientes.
                         </p>
+                        
+                        <div className="border-l-2 border-[#c69955] pl-6 mt-8">
+                            <p className="text-white text-lg font-display italic">
+                                "Conocemos a la autoridad porque trabajamos dentro de ella. Esa ventaja estratégica define nuestra defensa."
+                            </p>
+                        </div>
                     </motion.div>
 
                     {/* Right: Pillars Grid */}
@@ -54,7 +62,7 @@ export function Stats() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group p-10 bg-white/5 border border-white/5 hover:border-[#c69955]/30 transition-all duration-500 rounded-sm flex items-start gap-8"
+                                className="group p-6 sm:p-10 bg-white/5 border border-white/5 hover:border-[#c69955]/30 transition-all duration-500 rounded-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 sm:gap-8"
                             >
                                 <div className="w-16 h-16 shrink-0 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#c69955] group-hover:border-[#c69955] transition-all duration-500 shadow-xl">
                                     <pillar.icon size={24} className="text-[#c69955] group-hover:text-black transition-colors" />
@@ -71,17 +79,17 @@ export function Stats() {
 
                 </div>
 
-                {/* Social Proof Bar */}
-                <div className="mt-32 pt-20 border-t border-white/5">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                {/* Social Proof Bar / Credibility Bar */}
+                <div className="mt-16 pt-10 md:mt-32 md:pt-20 border-t border-white/5">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.6 }}
                         >
-                            <p className="text-4xl md:text-5xl font-display text-white mb-2">+200</p>
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-[#c69955] font-bold">Clientes Atendidos</p>
+                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Ex-funcionarios</p>
+                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">de PRODECON y TFJA</p>
                         </motion.div>
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -89,8 +97,8 @@ export function Stats() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                            <p className="text-4xl md:text-5xl font-display text-white mb-2">49</p>
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-[#c69955] font-bold">Reseñas en Google</p>
+                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Litigio</p>
+                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">de Alta Cuantía</p>
                         </motion.div>
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -98,8 +106,8 @@ export function Stats() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            <p className="text-4xl md:text-5xl font-display text-white mb-2">+20</p>
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-[#c69955] font-bold">Años de Trayectoria</p>
+                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Protección Patrimonial</p>
+                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">Efectiva</p>
                         </motion.div>
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -107,8 +115,8 @@ export function Stats() {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.3 }}
                         >
-                            <p className="text-4xl md:text-5xl font-display text-white mb-2">4.9/5</p>
-                            <p className="text-[10px] uppercase tracking-[0.3em] text-[#c69955] font-bold">Calificación Media</p>
+                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Cobertura Federal</p>
+                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">y Estatal</p>
                         </motion.div>
                     </div>
                 </div>

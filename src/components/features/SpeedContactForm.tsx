@@ -50,14 +50,14 @@ export function SpeedContactForm() {
 
     const onSubmit = async (data: FormData) => {
         setIsSubmitting(true);
-        console.log("Submitting to Webhook:", import.meta.env.VITE_SPEED_WEBHOOK);
+        console.log("Submitting to Webhook:", process.env.NEXT_PUBLIC_SPEED_WEBHOOK);
 
         try {
             // Attempt to send to n8n Webhook
             // --- WEBHOOK CONFIGURATION ---
             // To receive leads: Set VITE_SPEED_WEBHOOK in your .env or Netlify Environment Variables.
             // If missing, the form runs in Demo Mode (simulated success).
-            const webhookUrl = (config as any).analytics?.webhookUrl || import.meta.env.VITE_SPEED_WEBHOOK;
+            const webhookUrl = (config as any).analytics?.webhookUrl || process.env.NEXT_PUBLIC_SPEED_WEBHOOK;
 
             const trafficSource = getTrafficSource();
 

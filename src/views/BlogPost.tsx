@@ -1,4 +1,7 @@
-import { useParams, Link } from "react-router-dom";
+"use client";
+
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { ChevronLeft, Clock, User, Share2, Quote } from "lucide-react";
 import { ALL_POSTS } from "./Blog";
@@ -32,7 +35,7 @@ export default function BlogPost() {
 
     if (!post) return (
         <div className="bg-[#0d0c0a] min-h-screen flex items-center justify-center">
-            <Link to="/blog" className="text-[#c69955] font-display text-xl border-b border-[#c69955] pb-2">Articulo no encontrado. Volver.</Link>
+            <Link href="/blog" className="text-[#c69955] font-display text-xl border-b border-[#c69955] pb-2">Articulo no encontrado. Volver.</Link>
         </div>
     );
 
@@ -52,7 +55,7 @@ export default function BlogPost() {
                             animate={{ opacity: 1, y: 0 }}
                             className="flex items-center gap-6 mb-12"
                         >
-                            <Link to="/blog" className="flex items-center gap-3 text-zinc-400 hover:text-black transition-colors text-[10px] tracking-[0.3em] uppercase font-bold">
+                            <Link href="/blog" className="flex items-center gap-3 text-zinc-400 hover:text-black transition-colors text-[10px] tracking-[0.3em] uppercase font-bold">
                                 <ChevronLeft size={16} /> Regresar
                             </Link>
                             <span className="w-12 h-[1px] bg-zinc-200" />
@@ -126,7 +129,7 @@ export default function BlogPost() {
                     <div className="mt-40 border-t border-zinc-200 pt-20 flex flex-col items-center text-center">
                         <span className="text-[#c69955] text-[10px] tracking-[0.5em] uppercase font-bold mb-6">Próximo paso</span>
                         <h3 className="text-4xl font-display text-[#0d0c0a] mb-12">¿Necesita asesoría especializada <br />sobre este tema?</h3>
-                        <Link to="/#contact" className="bg-[#0d0c0a] text-white px-12 py-5 text-[11px] tracking-[0.3em] uppercase font-bold hover:bg-[#c69955] transition-all duration-300">
+                        <Link href="/#contact" className="bg-[#0d0c0a] text-white px-12 py-5 text-[11px] tracking-[0.3em] uppercase font-bold hover:bg-[#c69955] transition-all duration-300">
                             Agendar consulta profesional
                         </Link>
                     </div>

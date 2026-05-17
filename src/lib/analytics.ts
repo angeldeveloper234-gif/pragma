@@ -4,7 +4,7 @@
 
 export const getVisitorId = () => {
     // Read ONLY. The CDN engine is responsible for generating and persisting this.
-    return localStorage.getItem("visitor_id") || 'unknown';
+    return typeof window !== "undefined" ? localStorage.getItem("visitor_id") || 'unknown' : 'unknown';
 };
 
 /**

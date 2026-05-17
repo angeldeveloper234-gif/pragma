@@ -5,12 +5,12 @@ export function Roadmap() {
     const { process } = config.dynamicContent;
 
     return (
-        <section className="py-32 bg-[#0F1216] relative overflow-hidden">
+        <section className="py-16 md:py-32 bg-[#0F1216] relative overflow-hidden">
             <div className="container mx-auto px-6">
-                <div className="text-center mb-24">
+                <div className="text-center mb-16 md:mb-24">
                     <span className="text-[#c69955] font-sans text-[10px] tracking-[0.4em] uppercase font-bold mb-4 block">Nuestro Método</span>
                     <h2 className="text-4xl md:text-6xl font-display text-white">
-                        Proceso de <span className="italic font-light text-[#c69955]">Tres Pasos</span>
+                        Protocolo de Defensa <br className="hidden md:block" /> en <span className="italic font-light text-[#c69955]">Tres Fases</span>
                     </h2>
                 </div>
 
@@ -32,7 +32,7 @@ export function Roadmap() {
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0F1216] via-transparent to-transparent" />
 
                             {/* Decorative Frame */}
-                            <div className="absolute -inset-4 border border-[#c69955]/20 rounded-2xl -z-10" />
+                            <div className="absolute -inset-2 sm:-inset-4 border border-[#c69955]/20 rounded-2xl -z-10" />
                         </div>
                     </motion.div>
 
@@ -45,7 +45,7 @@ export function Roadmap() {
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.2, duration: 0.8 }}
-                                className="group relative flex gap-8 items-start p-8 bg-white/5 border border-white/10 hover:border-[#c69955]/30 transition-all duration-500 backdrop-blur-sm"
+                                className="group relative flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start text-center sm:text-left p-6 sm:p-8 bg-white/5 border border-white/10 hover:border-[#c69955]/30 transition-all duration-500 backdrop-blur-sm"
                             >
                                 {/* Step Number Label */}
                                 <div className="flex-shrink-0 w-16 h-16 rounded-full border border-[#c69955]/30 flex items-center justify-center text-xl font-display text-[#c69955] group-hover:bg-[#c69955] group-hover:text-black transition-all duration-500 shadow-xl">

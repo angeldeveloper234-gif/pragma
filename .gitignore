@@ -9,6 +9,9 @@ coverage
 # Production
 dist
 dist-ssr
+.next/
+out/
+build/
 
 # Misc
 .DS_Store

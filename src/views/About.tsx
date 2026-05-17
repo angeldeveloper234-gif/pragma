@@ -13,7 +13,7 @@ export function About() {
                         <span className="italic font-light text-[#c69955]">Visión de Futuro.</span>
                     </h1>
                     <p className="text-zinc-400 font-sans font-light text-xl md:text-2xl leading-relaxed max-w-3xl">
-                        Bañuelos Villalba & Asociados S.C. nace de la necesidad de ofrecer una asesoría que combine la solidez del derecho con la precisión de la contabilidad, creando un blindaje integral para nuestros clientes.
+                        Pragma nace de la necesidad de ofrecer una asesoría que combine la solidez del derecho con la precisión de la contabilidad, creando un blindaje integral para nuestros clientes.
                     </p>
                 </div>
             </section>
@@ -53,7 +53,7 @@ export function About() {
                     <div className="relative aspect-[4/5] bg-zinc-900 overflow-hidden">
                         <img
                             src="/images/assets/nosotros-hero.png"
-                            alt="Oficinas Bañuelos Villalba"
+                            alt="Oficinas Pragma"
                             className="w-full h-full object-cover grayscale opacity-50"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0c0a] to-transparent" />

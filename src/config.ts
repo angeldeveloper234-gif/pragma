@@ -2,20 +2,20 @@ import testimonialsData from '../reseñas.json';
 
 export const config = {
     branding: {
-        name: "Bañuelos Villalba & Asociados S.C.",
+        name: "Pragma",
         logo: "/images/logo-white.svg",
-        tagline: "Excelencia Legal y Precisión Contable",
+        tagline: "Defensa Fiscal & Compliance",
     },
     contact: {
-        phone: "+52 222 435 7172",
-        email: "contacto@banuelosvillalba.com",
-        address: "Torre Omega, Centro Mayor, Calz Zavaleta, Puebla",
+        phone: "+52 222 123 4567",
+        email: "defensa@pragma.mx",
+        address: "Puebla, México",
         mapUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.68832049!2d-98.2435!3d19.0553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDAzJzE5LjEiTiA5OMKwMTQnNDIuNiJX!5e0!3m2!1sen!2smx!4v1713360000000!5m2!1sen!2smx",
     },
-    landingClientId: import.meta.env.VITE_LANDING_CLIENT_ID || "villalba-asociados",
+    landingClientId: process.env.NEXT_PUBLIC_LANDING_CLIENT_ID || "villalba-asociados",
     supabase: {
-        url: import.meta.env.VITE_SUPABASE_URL || "https://csfmrrjklvawxxhddgek.supabase.co",
-        anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZm1ycmprbHZhd3h4aGRkZ2VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMDAxNjUsImV4cCI6MjA4NTU3NjE2NX0.JZvPjloBM70iuC2wfRHTnVEsGwZvdMEadi1GMFdobNk",
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://csfmrrjklvawxxhddgek.supabase.co",
+        anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzZm1ycmprbHZhd3h4aGRkZ2VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAwMDAxNjUsImV4cCI6MjA4NTU3NjE2NX0.JZvPjloBM70iuC2wfRHTnVEsGwZvdMEadi1GMFdobNk",
     },
     dynamicContent: {
         stats: {
@@ -74,18 +74,18 @@ export const config = {
         process: [
             {
                 step: "01",
-                title: "Diagnóstico Inicial",
-                desc: "Evaluamos su situación legal y financiera para identificar riesgos y áreas de oportunidad."
+                title: "Diagnóstico Estratégico",
+                desc: "Evaluamos su situación fiscal, identificamos la posición de la autoridad y determinamos las vulnerabilidades y fortalezas de su caso."
             },
             {
                 step: "02",
-                title: "Estrategia Integral",
-                desc: "Diseñamos una hoja de ruta personalizada que combina soluciones jurídicas y contables."
+                title: "Estrategia de Defensa",
+                desc: "Diseñamos una hoja de ruta jurídica personalizada: medios de defensa, tiempos procesales y escenarios de resolución."
             },
             {
                 step: "03",
-                title: "Ejecución y Blindaje",
-                desc: "Implementamos las acciones necesarias para proteger su patrimonio y asegurar el cumplimiento."
+                title: "Ejecución y Protección",
+                desc: "Implementamos la defensa con litigio agresivo o compliance preventivo según el caso, protegiendo su patrimonio hasta la resolución definitiva."
             }
         ],
         recentCases: [
