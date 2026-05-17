@@ -11,7 +11,7 @@ import { CustomCursor } from "@/components/features/CustomCursor";
 
 export function Home() {
     return (
-        <main className="relative selection:bg-[#c69955] selection:text-black">
+        <main className="relative min-h-screen overflow-x-hidden selection:bg-[#c69955] selection:text-black">
             <Hero />
             <Stats />
             <Pricing />
