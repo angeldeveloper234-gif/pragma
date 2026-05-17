@@ -25,8 +25,8 @@ export function FAQ() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="py-32 bg-[#0F1216]">
-            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-16">
+        <section id="faq" className="py-16 md:py-32 bg-[#0F1216]">
+            <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
 
                 {/* Left Side: Text content */}
                 <div className="lg:col-span-4 self-start sticky top-32">
@@ -53,12 +53,12 @@ export function FAQ() {
                         <div key={i} className={`border-b border-white/10 overflow-hidden transition-all duration-500 ${openIndex === i ? 'bg-white/5' : 'hover:bg-white/[0.02]'}`}>
                             <button
                                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                                className="flex items-center justify-between w-full p-8 text-left"
+                                className="flex items-center justify-between w-full p-5 sm:p-8 text-left gap-4"
                             >
                                 <span className={`text-xl md:text-2xl font-display transition-colors duration-500 ${openIndex === i ? 'text-[#c69955]' : 'text-white'}`}>
                                     {faq.q}
                                 </span>
-                                <div className={`w-10 h-10 rounded-full border border-white/10 flex items-center justify-center transition-all duration-500 ${openIndex === i ? 'bg-[#c69955] border-[#c69955] rotate-45' : ''}`}>
+                                <div className={`w-10 h-10 shrink-0 rounded-full border border-white/10 flex items-center justify-center transition-all duration-500 ${openIndex === i ? 'bg-[#c69955] border-[#c69955] rotate-45' : ''}`}>
                                     <Plus className={`w-5 h-5 transition-colors ${openIndex === i ? 'text-black' : 'text-[#c69955]'}`} />
                                 </div>
                             </button>
@@ -71,7 +71,7 @@ export function FAQ() {
                                         exit={{ height: 0, opacity: 0 }}
                                         transition={{ duration: 0.5, ease: "circOut" }}
                                     >
-                                        <div className="px-8 pb-8 text-zinc-400 font-sans font-light text-lg leading-relaxed max-w-2xl">
+                                        <div className="px-5 pb-5 sm:px-8 sm:pb-8 text-zinc-400 font-sans font-light text-base sm:text-lg leading-relaxed max-w-2xl">
                                             {faq.a}
                                         </div>
                                     </motion.div>

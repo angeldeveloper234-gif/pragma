@@ -11,10 +11,10 @@ export function Testimonials() {
     const secondRow = [...testimonials.slice(half), ...testimonials.slice(half)];
 
     return (
-        <section id="testimonials" className="py-32 bg-[#0d0c0a] overflow-hidden">
-            <div className="container mx-auto px-6 mb-20 text-center">
+        <section id="testimonials" className="py-16 md:py-32 bg-[#0d0c0a] overflow-hidden">
+            <div className="container mx-auto px-6 mb-12 md:mb-20 text-center">
                 <div className="max-w-3xl mx-auto flex flex-col items-center">
-                    <div className="flex flex-col items-center gap-4 mb-8 bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur-md">
+                    <div className="flex flex-col items-center gap-4 mb-8 bg-white/5 border border-white/10 px-6 py-4 rounded-2xl backdrop-blur-md w-full sm:w-auto">
                         <div className="flex items-center gap-3">
                             <img src="/images/icons8-google-96.svg" className="w-6 h-6" alt="Google" />
                             <div className="flex gap-1">
@@ -69,13 +69,13 @@ export function Testimonials() {
             </div>
 
             {/* Final Social Proof Bar */}
-            <div className="container mx-auto px-6 mt-20">
+            <div className="container mx-auto px-6 mt-12 md:mt-20">
                 <div className="text-center">
-                    <div className="inline-flex flex-col items-center gap-4 p-8 border border-white/5 bg-white/[0.02] backdrop-blur-sm">
-                        <p className="text-white font-display text-2xl">
+                    <div className="inline-flex flex-col items-center gap-4 p-6 sm:p-8 border border-white/5 bg-white/[0.02] backdrop-blur-sm w-full sm:w-auto">
+                        <p className="text-white font-display text-xl sm:text-2xl">
                             5.0/5 <span className="text-[#c69955]">Excelencia Total</span>
                         </p>
-                        <p className="text-zinc-500 text-[10px] uppercase tracking-[0.4em]">
+                        <p className="text-zinc-500 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.4em] text-center">
                             Basado en +42 reseñas en Google Map y +200 clientes satisfechos
                         </p>
                     </div>
@@ -87,18 +87,18 @@ export function Testimonials() {
 
 function ReviewCard({ item }: { item: any }) {
     return (
-        <div className="bg-[#141414] border border-white/5 p-10 hover:border-[#c69955]/30 transition-all duration-500 group relative flex flex-col w-[400px] flex-shrink-0">
+        <div className="bg-[#141414] border border-white/5 p-6 sm:p-10 hover:border-[#c69955]/30 transition-all duration-500 group relative flex flex-col w-[280px] sm:w-[400px] flex-shrink-0">
             <div className="flex gap-1 mb-6">
                 {[...Array(5)].map((_, index) => (
                     <Star key={index} size={14} className="fill-[#c69955] text-[#c69955]" />
                 ))}
             </div>
 
-            <p className="text-zinc-300 font-sans font-light leading-relaxed mb-10 flex-1 italic text-sm">
+            <p className="text-zinc-300 font-sans font-light leading-relaxed mb-6 sm:mb-10 flex-1 italic text-sm">
                 "{item.text}"
             </p>
 
-            <div className="flex items-center gap-4 pt-8 border-t border-white/5 mt-auto">
+            <div className="flex items-center gap-4 pt-4 sm:pt-8 border-t border-white/5 mt-auto">
                 <div className="w-12 h-12 rounded-full overflow-hidden border border-[#c69955]/30">
                     <img src={item.avatar} alt={item.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
                 </div>
