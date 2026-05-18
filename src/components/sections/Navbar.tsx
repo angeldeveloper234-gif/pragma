@@ -43,7 +43,7 @@ export function Navbar() {
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-40 bg-[#0d0c0a]/90 backdrop-blur-sm border-b border-white/5">
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-[#0d0c0a]/90 backdrop-blur-sm border-b border-white/5">
             <div className="container mx-auto px-6 h-24 flex items-center justify-between">
                 <Link href="/" className="flex items-center">
                     <span className="text-2xl font-bold tracking-widest text-white uppercase">{branding.name}</span>
@@ -80,7 +80,7 @@ export function Navbar() {
 
                 {/* Hamburger button */}
                 <button
-                    className="md:hidden text-white p-2 focus:outline-none"
+                    className="md:hidden text-white p-3 focus:outline-none"
                     onClick={() => setIsOpen(!isOpen)}
                     aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
                     aria-expanded={isOpen}
@@ -99,7 +99,7 @@ export function Navbar() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
                             onClick={() => setIsOpen(false)}
                         />
 
@@ -109,13 +109,13 @@ export function Navbar() {
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "tween", ease: "easeInOut", duration: 0.3 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-[#0d0c0a] border-l border-white/10 z-50 md:hidden flex flex-col h-full shadow-2xl"
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] bg-[#0d0c0a] border-l border-white/10 z-[110] md:hidden flex flex-col h-screen shadow-2xl"
                         >
                             {/* Drawer Header */}
                             <div className="flex items-center justify-between px-8 h-24 border-b border-white/5">
                                 <span className="text-xl font-bold tracking-widest text-white uppercase">{branding.name}</span>
                                 <button
-                                    className="text-white p-2 hover:text-[#c69955] transition-colors focus:outline-none"
+                                    className="text-white p-3 hover:text-[#c69955] transition-colors focus:outline-none"
                                     onClick={() => setIsOpen(false)}
                                     aria-label="Cerrar menú"
                                 >
