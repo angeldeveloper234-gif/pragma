@@ -6,82 +6,153 @@ import { MapPin, Phone, Mail } from "lucide-react";
 
 export function Footer() {
     const { branding, contact } = config;
+    const mutedText = "rgba(255,255,255,0.55)";
+    const dividerColor = "rgba(255,255,255,0.08)";
 
     return (
-        <footer className="bg-[#0F1216] text-white pt-32 pb-12 border-t border-white/5 overflow-hidden">
-            <div className="container mx-auto px-6">
-                
-                <div className="flex flex-col items-center justify-center mb-32 text-center">
-                    <h2 className="text-[12vw] leading-none font-display text-white/[0.02] select-none pointer-events-none tracking-[0.2em] uppercase">PRAGMA</h2>
-                </div>
+        <footer className="text-white pt-20 pb-10" style={{ backgroundColor: "#0F2240" }}>
+            <div className="container mx-auto px-6" style={{ maxWidth: "1200px" }}>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+
+                    {/* Brand column */}
                     <div className="lg:col-span-1">
-                        <div className="text-3xl font-display text-white tracking-[0.2em] mb-8 uppercase">{branding.name}</div>
-                        <p className="text-zinc-500 font-sans font-light text-sm leading-relaxed mb-8">
+                        <div
+                            className="text-lg font-bold tracking-[0.3em] uppercase mb-5"
+                            style={{ fontFamily: "'Author', sans-serif" }}
+                        >
+                            {branding.name}
+                        </div>
+                        <p
+                            className="text-sm leading-relaxed mb-8"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                        >
                             {branding.tagline}
                         </p>
-                        <button 
-                            className="bg-[#c69955] text-black px-6 py-3 text-[10px] tracking-[0.2em] uppercase font-bold hover:bg-white transition-colors w-full md:w-auto text-center"
-                            onClick={() => window.location.href = '#contact'}
+                        <button
+                            className="rounded-lg text-white font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 text-[11px] tracking-[0.15em] uppercase"
+                            style={{
+                                fontFamily: "'DM Sans', sans-serif",
+                                backgroundColor: "#2C5494",
+                                padding: "10px 22px",
+                            }}
+                            onClick={() => window.location.href = "#contact"}
                         >
-                            Solicitar Asesoría Confidencial
+                            Asesoría Confidencial
                         </button>
                     </div>
 
-                    {/* Quick Links */}
+                    {/* Navegación */}
                     <div>
-                        <h5 className="text-[10px] uppercase tracking-[0.3em] text-white font-bold mb-8">Navegación</h5>
-                        <ul className="space-y-4 text-zinc-500 font-sans text-sm font-light">
-                            <li className="hover:text-[#c69955] cursor-pointer transition-colors" onClick={() => window.scrollTo(0, 0)}>Inicio</li>
-                            <li className="hover:text-[#c69955] cursor-pointer transition-colors" onClick={() => window.location.href = '#firma'}>Firma</li>
-                            <li className="hover:text-[#c69955] cursor-pointer transition-colors" onClick={() => window.location.href = '#servicios'}>Servicios</li>
-                            <li className="hover:text-[#c69955] cursor-pointer transition-colors" onClick={() => window.location.href = '#contact'}>Contacto</li>
+                        <h5
+                            className="text-[10px] uppercase tracking-[0.28em] font-bold mb-6"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                        >
+                            Navegación
+                        </h5>
+                        <ul className="space-y-3">
+                            {[
+                                { href: "/", label: "Inicio" },
+                                { href: "/servicios", label: "Servicios" },
+                                { href: "/diagnostico", label: "Diagnóstico Fiscal" },
+                                { href: "/equipo", label: "Equipo" },
+                                { href: "/blog", label: "Blog" },
+                            ].map(({ href, label }) => (
+                                <li key={href}>
+                                    <Link
+                                        href={href}
+                                        className="text-sm transition-colors duration-200 hover:text-white underline-offset-2 hover:underline"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                                    >
+                                        {label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Legal Links */}
+                    {/* Legal */}
                     <div>
-                        <h5 className="text-[10px] uppercase tracking-[0.3em] text-white font-bold mb-8">Legal</h5>
-                        <ul className="space-y-4 text-zinc-500 font-sans text-sm font-light">
-                            <li><Link href="/privacidad" className="hover:text-[#c69955] cursor-pointer transition-colors">Aviso de Privacidad</Link></li>
-                            <li><Link href="/terminos" className="hover:text-[#c69955] cursor-pointer transition-colors">Términos de Servicio</Link></li>
+                        <h5
+                            className="text-[10px] uppercase tracking-[0.28em] font-bold mb-6"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                        >
+                            Legal
+                        </h5>
+                        <ul className="space-y-3">
+                            {[
+                                { href: "/privacidad", label: "Aviso de Privacidad" },
+                                { href: "/terminos", label: "Términos de Servicio" },
+                            ].map(({ href, label }) => (
+                                <li key={href}>
+                                    <Link
+                                        href={href}
+                                        className="text-sm transition-colors duration-200 hover:text-white underline-offset-2 hover:underline"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                                    >
+                                        {label}
+                                    </Link>
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
+                    {/* Contact */}
                     <div>
-                        <h5 className="text-[10px] uppercase tracking-[0.3em] text-white font-bold mb-8">Puebla, Mx</h5>
-                        <ul className="space-y-6 text-zinc-500 font-sans text-sm font-light">
-                            <li className="flex items-start gap-4">
-                                <MapPin size={16} className="text-[#c69955] mt-1 shrink-0" />
-                                <span>{contact.address}</span>
-                            </li>
-                            <li className="flex items-center gap-4">
-                                <Phone size={16} className="text-[#c69955] mt-1 shrink-0" />
-                                <span>{contact.phone}</span>
-                            </li>
-                            <li className="flex items-center gap-4">
-                                <Mail size={16} className="text-[#c69955] mt-1 shrink-0" />
-                                <span>{contact.email}</span>
-                            </li>
+                        <h5
+                            className="text-[10px] uppercase tracking-[0.28em] font-bold mb-6"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                        >
+                            Puebla, México
+                        </h5>
+                        <ul className="space-y-5">
+                            {[
+                                { Icon: MapPin, text: contact.address },
+                                { Icon: Phone, text: contact.phone },
+                                { Icon: Mail, text: contact.email },
+                            ].map(({ Icon, text }, i) => (
+                                <li key={i} className="flex items-start gap-3">
+                                    <Icon size={14} className="shrink-0 mt-0.5" style={{ color: "#C9A84C" }} />
+                                    <span
+                                        className="text-sm leading-relaxed"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                                    >
+                                        {text}
+                                    </span>
+                                </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-12 gap-8 mb-12">
-                    <p className="text-zinc-700 text-[10px] font-sans uppercase tracking-[0.2em] text-center md:text-left">
+                {/* Bottom */}
+                <div
+                    className="flex flex-col md:flex-row justify-between items-center pt-8 gap-4"
+                    style={{ borderTop: `1px solid ${dividerColor}` }}
+                >
+                    <p
+                        className="text-[10px] uppercase tracking-[0.2em] font-semibold"
+                        style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                    >
                         © {new Date().getFullYear()} {branding.name}. Todos los derechos reservados.
                     </p>
-                </div>
-
-                <div className="flex flex-col items-center justify-center pt-12 border-t border-white/5">
-                    <p className="text-zinc-500 text-[12px] font-sans uppercase tracking-[0.4em] flex items-center gap-2">
-                        Hecho por <a href="https://www.angelstudio.design/" target="_blank" rel="noopener noreferrer" className="text-[#c69955] font-bold hover:text-white hover:scale-105 transition-all duration-300 transform inline-block">Angel Design Studio</a>
+                    <p
+                        className="text-[10px] uppercase tracking-[0.2em] flex items-center gap-1"
+                        style={{ fontFamily: "'DM Sans', sans-serif", color: mutedText }}
+                    >
+                        Hecho por{" "}
+                        <a
+                            href="https://www.angelstudio.design/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold hover:text-white transition-colors"
+                            style={{ color: "rgba(255,255,255,0.7)" }}
+                        >
+                            Angel Design Studio
+                        </a>
                     </p>
                 </div>
             </div>
         </footer>
     );
 }
-

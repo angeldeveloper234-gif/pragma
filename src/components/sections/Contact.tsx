@@ -1,8 +1,20 @@
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail, ArrowRight, UserCheck } from "lucide-react";
 import { config } from "@/config";
+
+const inputBase: React.CSSProperties = {
+    width: "100%",
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: "15px",
+    color: "#1A1D26",
+    backgroundColor: "#F5F7FA",
+    border: "1.5px solid #D8DFE9",
+    borderRadius: "8px",
+    padding: "12px 14px",
+    outline: "none",
+    transition: "border-color 0.2s",
+};
 
 export function Contact() {
     const { contact } = config;
@@ -13,138 +25,230 @@ export function Contact() {
         alert("Mensaje enviado. Un socio de la firma le contactará en breve para su evaluación preliminar.");
     };
 
-    return (        <section id="contact" className="py-16 md:py-32 bg-[#0F1216] relative">
-            <div className="container mx-auto px-6">
-                <div className="text-center mb-12 md:mb-20">
-                    <span className="text-[#c69955] font-sans text-[10px] tracking-[0.4em] uppercase font-bold mb-4 block">Contacto</span>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-display text-white mb-6">
-                        Paso Estratégico <br />
-                        <span className="italic font-light text-[#c69955]">Hablemos de su Futuro</span>
-                    </h2>
-                    <p className="text-zinc-500 font-sans font-light text-base sm:text-lg max-w-2xl mx-auto">
-                        Deje sus asuntos legales y financieros en manos de expertos. Contáctenos hoy para una evaluación preliminar de su caso.
-                    </p>
-                </div>
+    const focusStyle = {
+        onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+            e.target.style.borderColor = "#2C5494";
+            e.target.style.backgroundColor = "#ffffff";
+        },
+        onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+            e.target.style.borderColor = "#D8DFE9";
+            e.target.style.backgroundColor = "#F5F7FA";
+        },
+    };
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch max-w-7xl mx-auto">
+    return (
+        <section id="contact" className="py-28 md:py-40 border-t" style={{ backgroundColor: "#ffffff", borderColor: "#D8DFE9" }}> {/* DI — era py-20 md:py-28 */}
+            <div className="container mx-auto px-6" style={{ maxWidth: "1200px" }}>
 
-                    {/* Left Side: Contact Form Card */}
-                    <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="lg:col-span-7 bg-[#1A1F26] p-6 sm:p-10 md:p-16 border border-white/5 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-sm relative overflow-hidden"
+                {/* Header */}
+                <motion.div
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-80px" }}
+                    variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.1 } },
+                    }}
+                    className="text-center mb-14"
+                >
+                    <motion.p
+                        variants={{
+                            hidden: { opacity: 0, scale: 0.9 },
+                            visible: { opacity: 1, scale: 1, transition: { duration: 0.4 } },
+                        }}
+                        className="text-[11px] tracking-[0.28em] uppercase font-semibold mb-3"
+                        style={{ fontFamily: "'DM Sans', sans-serif", color: "#2C5494" }}
                     >
-                        {/* Decorative Background Accent */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#c69955]/[0.02] blur-[100px] -z-10" />
+                        Contacto
+                    </motion.p>
+                    <motion.h2
+                        variants={{
+                            hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7 } },
+                        }}
+                        className="font-bold leading-tight mb-4"
+                        style={{
+                            fontFamily: "'Author', sans-serif",
+                            fontSize: "clamp(32px, 4.5vw, 48px)", /* DI — era clamp(28px,4vw,40px) */
+                            color: "#1A1D26",
+                        }}
+                    >
+                        Hablemos de su Caso
+                    </motion.h2>
+                    <motion.p
+                        variants={{
+                            hidden: { opacity: 0, y: 12 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                        }}
+                        className="text-base leading-relaxed mx-auto"
+                        style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            color: "#4A5568",
+                            maxWidth: "480px",
+                        }}
+                    >
+                        Contáctenos para una evaluación preliminar confidencial de su situación fiscal.
+                    </motion.p>
+                </motion.div>
 
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 md:space-y-10">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-12 gap-y-8 md:gap-y-10">
-                                <div className="space-y-3">
-                                    <label className="text-[9px] uppercase tracking-[0.4em] text-[#c69955] font-bold">Nombre Completo</label>
-                                    <input
-                                        {...register("name")}
-                                        required
-                                        className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#c69955] transition-all duration-500 placeholder:text-zinc-700 font-sans text-base sm:text-lg font-light"
-                                        placeholder="Ej. Dr. Mauricio Castillo"
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[9px] uppercase tracking-[0.4em] text-[#c69955] font-bold">Empresa o Institución</label>
-                                    <input
-                                        {...register("company")}
-                                        className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#c69955] transition-all duration-500 placeholder:text-zinc-700 font-sans text-base sm:text-lg font-light"
-                                        placeholder="Nombre de su organización"
-                                    />
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[9px] uppercase tracking-[0.4em] text-[#c69955] font-bold">Especialidad Requerida</label>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start max-w-6xl mx-auto">
+
+                    {/* Form */}
+                    <motion.div
+                        initial={{ opacity: 0, x: -30, filter: "blur(6px)" }}
+                        whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.65, ease: "easeOut" }}
+                        className="lg:col-span-7 p-8 md:p-12 rounded-xl bg-white"
+                        style={{ border: "1.5px solid #D8DFE9" }}
+                    >
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {[
+                                    { name: "name", label: "Nombre Completo", placeholder: "Ej. Mauricio Castillo", required: true },
+                                    { name: "company", label: "Empresa o Institución", placeholder: "Nombre de su organización" },
+                                ].map((field) => (
+                                    <div key={field.name} className="flex flex-col gap-2">
+                                        <label
+                                            className="text-[10px] tracking-[0.2em] uppercase font-semibold"
+                                            style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                                        >
+                                            {field.label}
+                                        </label>
+                                        <input
+                                            {...register(field.name)}
+                                            required={field.required}
+                                            placeholder={field.placeholder}
+                                            style={inputBase}
+                                            {...focusStyle}
+                                        />
+                                    </div>
+                                ))}
+
+                                <div className="flex flex-col gap-2">
+                                    <label
+                                        className="text-[10px] tracking-[0.2em] uppercase font-semibold"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                                    >
+                                        Especialidad Requerida
+                                    </label>
                                     <select
                                         {...register("service")}
-                                        className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#c69955] transition-all duration-500 font-sans text-base sm:text-lg font-light appearance-none cursor-pointer"
+                                        style={{ ...inputBase, cursor: "pointer", appearance: "none" as any }}
+                                        {...focusStyle}
                                     >
-                                        <option value="legal" className="bg-[#1A1F26]">Consultoría Legal</option>
-                                        <option value="contable" className="bg-[#1A1F26]">Asesoría Contable / Fiscal</option>
-                                        <option value="integral" className="bg-[#1A1F26]">Solución Integral Corporativa</option>
+                                        <option value="defensa">Defensa Fiscal Estratégica</option>
+                                        <option value="litigio">Litigio Contencioso de Alto Impacto</option>
+                                        <option value="cumplimiento">Cumplimiento y Prevención Fiscal</option>
                                     </select>
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="text-[9px] uppercase tracking-[0.4em] text-[#c69955] font-bold">Correo Corporativo</label>
+
+                                <div className="flex flex-col gap-2">
+                                    <label
+                                        className="text-[10px] tracking-[0.2em] uppercase font-semibold"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                                    >
+                                        Correo Corporativo
+                                    </label>
                                     <input
                                         {...register("email")}
                                         required
                                         type="email"
-                                        className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#c69955] transition-all duration-500 placeholder:text-zinc-700 font-sans text-base sm:text-lg font-light"
                                         placeholder="contacto@empresa.com"
+                                        style={inputBase}
+                                        {...focusStyle}
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-3">
-                                <label className="text-[9px] uppercase tracking-[0.4em] text-[#c69955] font-bold">Resumen de la Consulta</label>
+                            <div className="flex flex-col gap-2">
+                                <label
+                                    className="text-[10px] tracking-[0.2em] uppercase font-semibold"
+                                    style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                                >
+                                    Resumen de la Consulta
+                                </label>
                                 <textarea
                                     {...register("message")}
                                     rows={4}
-                                    className="w-full bg-transparent border-b border-white/10 py-3 text-white focus:outline-none focus:border-[#c69955] transition-all duration-500 placeholder:text-zinc-700 font-sans text-base sm:text-lg font-light resize-none"
                                     placeholder="Describa brevemente el alcance de su necesidad..."
+                                    style={{ ...inputBase, resize: "none" }}
+                                    onFocus={(e) => { e.target.style.borderColor = "#2C5494"; e.target.style.backgroundColor = "#ffffff"; }}
+                                    onBlur={(e) => { e.target.style.borderColor = "#D8DFE9"; e.target.style.backgroundColor = "#F5F7FA"; }}
                                 />
                             </div>
 
-                            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 pt-4 w-full">
-                                <Button
+                            <div className="flex flex-col sm:flex-row items-center gap-6 pt-2">
+                                <button
                                     type="submit"
-                                    className="w-full sm:w-auto bg-[#c69955] text-black hover:bg-white rounded-none px-6 sm:px-12 h-16 sm:h-20 text-xs tracking-[0.4em] uppercase font-bold transition-all duration-500 shadow-[0_20px_40px_-10px_rgba(212,175,55,0.3)] group flex justify-center items-center"
+                                    className="flex items-center gap-3 rounded-lg text-white font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 w-full sm:w-auto justify-center"
+                                    style={{
+                                        fontFamily: "'DM Sans', sans-serif",
+                                        fontSize: "12px",
+                                        letterSpacing: "0.08em",
+                                        backgroundColor: "#2C5494",
+                                        padding: "14px 32px",
+                                    }}
                                 >
                                     Solicitar Evaluación
-                                    <ArrowRight className="ml-4 w-5 h-5 shrink-0 group-hover:translate-x-1 transition-transform" />
-                                </Button>
-                                <p className="text-[9px] text-zinc-500 uppercase tracking-widest leading-relaxed text-center sm:text-left">
-                                    Respuesta garantizada <br /> en menos de 24 horas hábiles.
+                                    <ArrowRight size={15} />
+                                </button>
+                                <p
+                                    className="text-[10px] uppercase tracking-widest font-semibold leading-relaxed text-center sm:text-left"
+                                    style={{ fontFamily: "'DM Sans', sans-serif", color: "#8896AB" }}
+                                >
+                                    Respuesta garantizada<br />en menos de 24 horas hábiles.
                                 </p>
                             </div>
                         </form>
                     </motion.div>
 
-                    {/* Right Side: Profile & Info Card */}
+                    {/* Info card */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
-                        className="lg:col-span-5 flex flex-col gap-8"
+                        initial={{ opacity: 0, x: 30, filter: "blur(6px)" }}
+                        whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                        viewport={{ once: true, margin: "-60px" }}
+                        transition={{ duration: 0.65, delay: 0.1, ease: "easeOut" }}
+                        className="lg:col-span-5 rounded-xl p-10 text-white"
+                        style={{ backgroundColor: "#0F2240" }}
                     >
-                        <div className="bg-[#141414] border border-white/5 p-6 sm:p-12 flex-1 relative overflow-hidden group">
-                            <div className="relative z-10">
-                                <UserCheck size={48} className="text-[#c69955] mb-8" />
-                                <h3 className="text-2xl md:text-3xl font-display text-white mb-10 leading-tight">Sinergia <br /> Profesional</h3>
+                        <UserCheck size={40} className="mb-8" style={{ color: "rgba(255,255,255,0.7)" }} />
+                        <h3
+                            className="font-bold leading-tight mb-8"
+                            style={{ fontFamily: "'Author', sans-serif", fontSize: "26px", color: "#ffffff" }}
+                        >
+                            Sinergia<br />Profesional
+                        </h3>
 
-                                <div className="space-y-8">
-                                    <div className="flex items-start gap-4 text-zinc-400 group-hover:text-white transition-colors duration-500">
-                                        <MapPin size={22} className="text-[#c69955] shrink-0" />
-                                        <span className="text-sm md:text-base font-sans font-light leading-relaxed">
-                                            Torre Omega, Centro Mayor,<br />
-                                            Calz Zavaleta, Puebla, Pue.
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-zinc-400 group-hover:text-white transition-colors duration-500">
-                                        <Phone size={22} className="text-[#c69955] shrink-0" />
-                                        <span className="text-sm md:text-base font-sans font-light tracking-wide">{contact.phone}</span>
-                                    </div>
-                                    <div className="flex items-center gap-4 text-zinc-400 group-hover:text-white transition-colors duration-500">
-                                        <Mail size={22} className="text-[#c69955] shrink-0" />
-                                        <span className="text-sm md:text-base font-sans font-light tracking-wide">{contact.email}</span>
-                                    </div>
+                        <div className="space-y-6">
+                            {[
+                                { Icon: MapPin, text: "Torre Omega, Centro Mayor,\nCalz Zavaleta, Puebla, Pue." },
+                                { Icon: Phone, text: contact.phone },
+                                { Icon: Mail, text: contact.email },
+                            ].map(({ Icon, text }, i) => (
+                                <div key={i} className="flex items-start gap-4">
+                                    <Icon size={18} className="shrink-0 mt-0.5" style={{ color: "#C9A84C" }} />
+                                    <span
+                                        className="text-sm leading-relaxed whitespace-pre-line"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: "rgba(255,255,255,0.75)" }}
+                                    >
+                                        {text}
+                                    </span>
                                 </div>
+                            ))}
+                        </div>
 
-                                <div className="mt-16 flex items-center gap-3 bg-white/[0.03] w-fit px-4 py-2 border border-white/5">
-                                    <img src="/images/icons8-google-96.svg" alt="Google" className="w-4 h-4" />
-                                    <span className="text-white text-[9px] font-bold tracking-[0.3em] uppercase">Socio Estratégico de Google Maps</span>
-                                </div>
-                            </div>
-
-                            {/* Background Number Decal */}
-                            <span className="absolute -bottom-10 -right-10 text-[200px] font-display font-bold text-white/[0.02] pointer-events-none select-none">B</span>
+                        <div
+                            className="mt-10 flex items-center gap-3 px-4 py-3 rounded-lg w-fit"
+                            style={{ backgroundColor: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
+                        >
+                            <img src="/images/icons8-google-96.svg" alt="Google" className="w-4 h-4" />
+                            <span
+                                className="text-[9px] font-bold tracking-[0.25em] uppercase"
+                                style={{ fontFamily: "'DM Sans', sans-serif", color: "rgba(255,255,255,0.7)" }}
+                            >
+                                5.0 · +42 Reseñas Google
+                            </span>
                         </div>
                     </motion.div>
                 </div>

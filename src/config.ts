@@ -26,49 +26,26 @@ export const config = {
             googleReviews: "42"
         },
         services: [
-            // Legal Category
             {
                 id: "01",
                 category: "LEGAL",
-                title: "Derecho Corporativo",
-                desc: "Constitución de sociedades, contratos y fusiones estratégicas.",
-                icon: "Building",
+                title: "Compliance Fiscal Empresarial",
+                desc: "Prevención, blindaje y cumplimiento normativo ante autoridades federales.",
+                icon: "Shield",
             },
             {
                 id: "02",
                 category: "LEGAL",
-                title: "Litigio Estratégico",
-                desc: "Representación civil, mercantil y administrativa de alto nivel.",
+                title: "Defensa Fiscal y Contencioso Administrativo",
+                desc: "Representación estratégica frente a créditos y actos de molestia.",
                 icon: "Gavel",
             },
             {
                 id: "03",
-                category: "LEGAL",
-                title: "Defensa Fiscal",
-                desc: "Protección integral ante auditorías y controversias tributarias.",
-                icon: "Shield",
-            },
-            // Accounting Category
-            {
-                id: "04",
                 category: "CONTABLE",
-                title: "Planeación Fiscal",
-                desc: "Optimización estratégica de cargas tributarias dentro del marco legal.",
+                title: "Acompañamiento Contable Estratégico",
+                desc: "Optimización y supervisión para una estructura financiera y fiscal sólida.",
                 icon: "TrendingUp",
-            },
-            {
-                id: "05",
-                category: "CONTABLE",
-                title: "Auditoría Contable",
-                desc: "Evaluación profunda de la salud financiera de su organización.",
-                icon: "Search",
-            },
-            {
-                id: "06",
-                category: "CONTABLE",
-                title: "Cumplimiento Normativo",
-                desc: "Gestión de obligaciones fiscales y nóminas sin margen de error.",
-                icon: "CheckCircle",
             }
         ],
         process: [
@@ -90,17 +67,17 @@ export const config = {
         ],
         recentCases: [
             {
-                title: "Blindaje Corporativo para Grupo Inmobiliario",
-                category: "DERECHO CORPORATIVO",
+                title: "Blindaje Fiscal para Grupo Inmobiliario",
+                category: "COMPLIANCE FISCAL",
                 area: "LEGAL",
-                tags: ["Corporativo", "Legal", "Gobernanza", "Blindaje"],
-                summary: "Reestructuración total de actas de asamblea y gobierno corporativo para una de las desarrolladoras más grandes de la región.",
-                context: "La empresa enfrentaba riesgos por falta de formalidad en sus procesos de toma de decisiones y dispersión patrimonial que ponía en duda la validez de acuerdos previos.",
-                result: "Se logró la unificación de criterios, protección de socios minoritarios y un blindaje del 100% ante futuras contingencias legales y operativas.",
+                tags: ["Fiscal", "Legal", "Gobernanza", "Blindaje"],
+                summary: "Reestructuración integral y compliance fiscal para una de las desarrolladoras más grandes de la región.",
+                context: "La empresa enfrentaba riesgos por falta de formalidad en sus procesos operativos y dispersión patrimonial que ponía en duda la validez de acuerdos frente a la autoridad.",
+                result: "Se logró la unificación de criterios, protección de socios y un blindaje del 100% ante futuras contingencias o auditorías.",
                 image: "/images/assets/blindaje-corporativo.png"
             },
             {
-                title: "Optimización Fiscal de Cadena Comercial",
+                title: "Acompañamiento Contable Estratégico",
                 category: "ESTRATEGIA CONTABLE",
                 area: "CONTABLE",
                 tags: ["Fiscal", "Contable", "Auditoría", "Optimización"],
@@ -118,16 +95,6 @@ export const config = {
                 context: "Imputación errónea de ingresos por parte de la autoridad durante una auditoría domiciliaria compleja que amenazaba la estabilidad de la empresa.",
                 result: "Sentencia definitiva y firme a favor del cliente, con condonación total de multas y recargos, sentando un precedente en la defensa de sus derechos.",
                 image: "/images/assets/defensa-fiscal.png"
-            },
-            {
-                title: "Compliance Laboral para Fintech",
-                category: "DERECHO LABORAL",
-                area: "LEGAL",
-                tags: ["Laboral", "Compliance", "Digital", "RH"],
-                summary: "Implementación de NOM-035 y esquemas de teletrabajo para 150 empleados distribuidos en el país.",
-                context: "Desfase en la normativa laboral vigente y riesgos de multas de la STPS por falta de protocolos preventivos y manuales de operación digital.",
-                result: "Cumplimiento al 100% de la normativa, reducción de rotación de talento y blindaje patronal ante demandas injustificadas durante la transición híbrida.",
-                image: "/images/assets/cumplimiento-laboral.png"
             }
         ]
     },

@@ -1,49 +1,90 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function CTA() {
     return (
-        <section className="py-16 md:py-32 bg-[#0F1216] text-white relative overflow-hidden border-t border-white/5">
-            {/* Subtle glow effect */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#c69955]/5 blur-[120px] rounded-full pointer-events-none" />
-
-            <div className="container mx-auto px-6 text-center relative z-10">
+        <section
+            className="py-28 md:py-40 text-white relative overflow-hidden" /* DI — era py-20 md:py-28 */
+            style={{ backgroundColor: "#0F2240" }}
+        >
+            <div className="container mx-auto px-6 text-center relative z-10" style={{ maxWidth: "1200px" }}>
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-80px" }}
+                    variants={{
+                        hidden: {},
+                        visible: { transition: { staggerChildren: 0.13 } },
+                    }}
+                    className="max-w-3xl mx-auto"
                 >
-                    <ShieldCheck size={48} className="mx-auto mb-8 text-[#c69955] opacity-50" />
+                    <motion.div
+                        variants={{
+                            hidden: { opacity: 0, scale: 0.6 },
+                            visible: { opacity: 1, scale: 1, transition: { duration: 0.5, type: "spring", stiffness: 180 } },
+                        }}
+                    >
+                        <ShieldCheck
+                            size={40}
+                            className="mx-auto mb-8"
+                            style={{ color: "rgba(255,255,255,0.4)" }}
+                        />
+                    </motion.div>
 
-                    <h2 className="text-3xl sm:text-4xl md:text-6xl font-display mb-10 leading-[1.1] tracking-tighter">
-                        ¿La Autoridad Fiscal Ya Actuó <span className="text-[#c69955] italic underline decoration-1 underline-offset-8">Contra Su Empresa?</span>
-                    </h2>
+                    <motion.h2
+                        variants={{
+                            hidden: { opacity: 0, y: 30, filter: "blur(10px)" },
+                            visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7 } },
+                        }}
+                        className="font-bold leading-tight mb-8"
+                        style={{
+                            fontFamily: "'Author', sans-serif",
+                            fontSize: "clamp(32px, 5vw, 52px)", /* DI — era clamp(28px,4.5vw,48px) */
+                            color: "#ffffff",
+                        }}
+                    >
+                        ¿Necesita proteger la posición<br />
+                        fiscal de su empresa?
+                    </motion.h2>
 
-                    <p className="text-lg md:text-xl text-zinc-400 mb-10 md:mb-16 font-sans font-light leading-relaxed max-w-2xl mx-auto">
-                        No espere a que el daño sea irreversible. Cada día sin defensa es un día que la autoridad avanza. Iniciamos su estrategia de protección en menos de 24 horas.
-                    </p>
+                    <motion.p
+                        variants={{
+                            hidden: { opacity: 0, y: 16 },
+                            visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                        }}
+                        className="mb-12 leading-relaxed mx-auto"
+                        style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "17px",
+                            color: "rgba(255,255,255,0.7)",
+                            maxWidth: "520px",
+                        }}
+                    >
+                        Evaluamos su situación y diseñamos una estrategia de defensa
+                        personalizada. Iniciamos su acompañamiento en menos de 24 horas.
+                    </motion.p>
 
-                    <div className="flex flex-col items-center gap-8 w-full">
-                        <Button
-                            size="lg"
-                            className="w-full sm:w-auto h-16 sm:h-20 px-6 sm:px-12 bg-white text-black hover:bg-[#c69955] hover:text-white rounded-none text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.3em] uppercase font-bold transition-all duration-500 shadow-2xl flex justify-center items-center"
-                            onClick={() => window.location.href = '#contact'}
+                    <motion.div
+                        variants={{
+                            hidden: { opacity: 0, y: 20, scale: 0.9 },
+                            visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, type: "spring", stiffness: 200 } },
+                        }}
+                    >
+                        <button
+                            className="inline-flex items-center gap-3 rounded-lg text-white font-semibold transition-all duration-200 hover:opacity-90 active:scale-95"
+                            style={{
+                                fontFamily: "'DM Sans', sans-serif",
+                                fontSize: "13px",
+                                letterSpacing: "0.08em",
+                                backgroundColor: "#2C5494",
+                                padding: "16px 40px",
+                            }}
+                            onClick={() => window.location.href = "#contact"}
                         >
-                            Solicitar Evaluación de Urgencia <ArrowRight className="ml-4 w-5 h-5 shrink-0" />
-                        </Button>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-                            <span className="text-[10px] uppercase tracking-[0.2em] font-bold">Certificaciones de Élite</span>
-                            <div className="hidden sm:block h-4 w-[1px] bg-white/20"></div>
-                            <div className="flex gap-4">
-                                {/* Placeholders for authority logos */}
-                                <div className="text-[10px] border border-white/20 px-2 py-1">ISO 9001</div>
-                                <div className="text-[10px] border border-white/20 px-2 py-1">TOP FIRM 2024</div>
-                            </div>
-                        </div>
-                    </div>
+                            Solicitar Evaluación Preliminar
+                            <ArrowRight size={16} />
+                        </button>
+                    </motion.div>
                 </motion.div>
             </div>
         </section>

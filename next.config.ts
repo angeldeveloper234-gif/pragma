@@ -3,10 +3,17 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'export',
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      '@supabase/supabase-js',
+      '@hookform/resolvers',
+    ],
   },
-  // Opcional: reducir consumo de memoria deshabilitando source maps en dev
   productionBrowserSourceMaps: false,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;

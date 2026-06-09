@@ -1,39 +1,243 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
 @import "tailwindcss";
 
-@theme {
-    --color-background: #0F1216;
-    --color-foreground: #fafafa;
-    --color-primary: #D4AF37;
-    --color-primary-foreground: #000000;
-    --color-muted: #141414;
-    --color-muted-foreground: #a1a1aa;
-    --font-display: 'Playfair Display', serif;
-    --font-sans: 'Inter', sans-serif;
+/* ─── Author Variable Font (self-hosted) ─────────────────── */
+@font-face {
+    font-family: 'Author';
+    src: url('/fonts/Author-Variable.woff2') format('woff2-variations');
+    font-weight: 200 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Author';
+    src: url('/fonts/Author-VariableItalic.woff2') format('woff2-variations');
+    font-weight: 200 700;
+    font-style: italic;
+    font-display: swap;
 }
 
+/* ─── Design Tokens ──────────────────────────────────────── */
+@theme {
+    /* Brand */
+    --color-primary:        #1B3564;
+    --color-primary-light:  #2C5494;
+    --color-primary-dark:   #0F2240;
+    --color-accent:         #C9A84C;
+
+    /* Backgrounds */
+    --color-background:     #EEF1F6;
+    --color-bg-light:       #F5F7FA;
+    --color-bg-warm:        #EEF1F6;
+
+    /* Text */
+    --color-foreground:     #1A1D26;
+    --color-text-secondary: #4A5568;
+    --color-text-muted:     #8896AB;
+
+    /* UI */
+    --color-border:         #D8DFE9;
+
+    /* Fonts */
+    --font-display: 'Author', 'DM Sans', sans-serif;
+    --font-sans:    'DM Sans', 'Author', sans-serif;
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
 @layer base {
     html {
-        scroll-behavior: smooth;
-        @apply antialiased bg-background text-foreground;
+        @apply antialiased;
+        background-color: #EEF1F6;
+        color: #1A1D26;
+        cursor: auto;
     }
     body {
-        @apply min-h-screen overflow-x-hidden font-sans;
-        background-color: #0F1216;
+        @apply min-h-screen overflow-x-hidden;
+        font-family: 'DM Sans', sans-serif;
+        background-color: #EEF1F6;
+        color: #1A1D26;
+    }
+    button, a, [role="button"], label[for], select {
+        cursor: pointer;
     }
     h1, h2, h3, h4, h5, h6 {
-        @apply font-display;
+        font-family: 'Author', sans-serif;
+        color: #1A1D26;
+        letter-spacing: -0.01em;
+    }
+    h1 { font-size: 48px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+    h2 { font-size: 36px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1 !important; }
+    h3 { font-size: 24px; font-weight: 600; line-height: 1.3; }
+    h4 { font-size: 20px; font-weight: 600; line-height: 1.4; }
+
+    @media (max-width: 768px) {
+        h1 { font-size: 32px; }
+        h2 { font-size: 28px; }
+        h3 { font-size: 22px; }
     }
 }
 
+/* ─── Utilities ──────────────────────────────────────────── */
 @layer utilities {
-    .glass-panel {
-        @apply bg-[#0D0D0D]/80 backdrop-blur-md border border-white/10;
-    }
     .noise-bg {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
-        pointer-events: none; z-index: 50; opacity: 0.05;
+        pointer-events: none; z-index: 50; opacity: 0.03;
         background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
     }
+    /* Label / overline style */
+    .label-overline {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #2C5494;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       DISEÑO INNOVADOR — Folder/Tab Cards (con rampa)
+       ─────────────────────────────────────────────────────────────
+       Para DESCARTAR este efecto:
+       1. Eliminar todo este bloque CSS (.card-folder)
+       2. Remover la clase "card-folder" de: Stats.tsx, Features.tsx
+       Aplica SOLO a: Stats ("La Firma"), Features ("Servicios")
+       NO aplica a: Hero, Navbar, Footer, Team, Testimonials,
+                    Contact, FAQ, Diagnóstico
+       ─────────────────────────────────────────────────────────────
+       Forma: pestaña con esquina redondeada arriba-izq y rampa
+       diagonal en el lado derecho (no corta a 90°).
+              ┌──────╲
+              │ TAB   ╲
+       ───────┘        ╲───────────────────
+       │                                  │
+       │             CARD                 │
+       ═══════════════════════════════════════════════════════════════ */
+    .card-folder {
+        position: relative;
+        border-top-left-radius: 0 !important;
+        margin-top: 16px;
+    }
+
+    /* Capa 1: Borde (contorno de la pestaña) */
+    .card-folder::before {
+        content: '';
+        position: absolute;
+        top: -14px;
+        left: -1.5px;
+        width: 76px;
+        height: 15.5px;
+        background: var(--folder-border, #D8DFE9);
+        clip-path: path('M 0 7 Q 0 0 7 0 L 54 0 L 76 15.5 L 0 15.5 Z');
+        z-index: 1;
+    }
+
+    /* Capa 2: Relleno (interior de la pestaña) */
+    .card-folder::after {
+        content: '';
+        position: absolute;
+        top: -12.5px;
+        left: 0;
+        width: 73px;
+        height: 14px;
+        background: var(--folder-bg, #ffffff);
+        clip-path: path('M 0 5.5 Q 0 0 5.5 0 L 52.5 0 L 73 14 L 0 14 Z');
+        z-index: 2;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       DISEÑO INNOVADOR — Guía de reversión completa
+       ─────────────────────────────────────────────────────────────
+       Todos los cambios DI están marcados con "DI" en componentes.
+       Para DESCARTAR:
+
+       FOLDER TABS → Eliminar .card-folder CSS + clase en Stats/Features
+       TIPOGRAFÍA  → Revertir inline font-size en:
+         HeroA/B h1: clamp(42px,6vw,68px) → clamp(32px,4.5vw,52px)
+         Secciones h2: clamp(32px,4.5vw,48px) → clamp(28px,4vw,40px)
+       WHITESPACE  → py-28 md:py-40 → py-20 md:py-28 en secciones
+       STATS       → Eliminar bloque "Estadísticas Gigantes" en Stats.tsx
+       FOTOS       → En Team.tsx img: restaurar "grayscale opacity-90"
+       ANIMACIONES → En FAQ.tsx: quitar motion.div wrapper de items
+       ═══════════════════════════════════════════════════════════════ */
+}
+
+/* ─── Hero container — +60px bottom padding en pantallas anchas ── */
+@media (min-width: 1580px) {
+    .hero-container {
+        padding-bottom: 60px;
+    }
+}
+
+/* ─── Splash Screen ─────────────────────────────────────── */
+.splash-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0F2240;
+    transition: opacity 500ms ease, transform 500ms ease;
+}
+.splash-exit {
+    opacity: 0;
+    transform: translateY(-100%);
+}
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+/* — Cubo 3D — */
+.splash-cube-scene {
+    width: 52px;
+    height: 52px;
+    perspective: 180px;
+    margin-bottom: 8px;
+}
+.splash-cube {
+    width: 52px;
+    height: 52px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: cube-spin 1.4s linear infinite;
+}
+.splash-face {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border: 1.5px solid rgba(201, 168, 76, 0.75);
+    background: rgba(201, 168, 76, 0.07);
+}
+.splash-face-front  { transform: rotateY(  0deg) translateZ(26px); }
+.splash-face-back   { transform: rotateY(180deg) translateZ(26px); }
+.splash-face-right  { transform: rotateY( 90deg) translateZ(26px); }
+.splash-face-left   { transform: rotateY(-90deg) translateZ(26px); }
+.splash-face-top    { transform: rotateX( 90deg) translateZ(26px); }
+.splash-face-bottom { transform: rotateX(-90deg) translateZ(26px); }
+
+@keyframes cube-spin {
+    0%   { transform: rotateX(-22deg) rotateY(  0deg); }
+    100% { transform: rotateX(-22deg) rotateY(360deg); }
+}
+
+/* — Textos — */
+.splash-title {
+    font-family: 'Author', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    line-height: 1;
+    margin: 0;
+}
+.splash-subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 0;
 }

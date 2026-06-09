@@ -1,16 +1,18 @@
 import { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import '../index.css';
 import { UserProvider } from '@/context/UserContext';
 import { Navbar } from '@/components/sections/Navbar';
 import { Footer } from '@/components/sections/Footer';
 import { ChatbotManager } from '@/components/ChatbotManager';
-
-const inter = Inter({ subsets: ['latin'] });
+import { SplashScreen } from '@/components/SplashScreen';
+import { SmoothScroll } from '@/components/SmoothScroll';
 
 export const metadata: Metadata = {
   title: 'Pragma | Defensa Fiscal Especializada',
   description: 'Firma de Defensa Fiscal & Compliance Fiscal',
+  other: {
+    'darkreader-lock': 'meta',
+  },
 };
 
 export default function RootLayout({
@@ -19,9 +21,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className="scroll-smooth">
-      <body className={`${inter.className} min-h-screen bg-[#0d0c0a] text-white overflow-x-hidden`}>
+    <html lang="es" suppressHydrationWarning>
+      <head />
+      <body className="min-h-screen overflow-x-hidden">
         <UserProvider>
+          <SmoothScroll />
+          {/* <SplashScreen /> */}
           <div className="relative min-h-screen">
             <div className="noise-bg" />
             <Navbar />
@@ -34,3 +39,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+ 

@@ -3,123 +3,146 @@ import { ShieldCheck, UserCheck, Lock } from "lucide-react";
 
 const pillars = [
     {
-        title: "Origen Institucional",
-        desc: "Socios formados en PRODECON y TFJA — conocemos los criterios internos de la autoridad.",
+        title: "Experiencia Práctica",
+        desc: "Nuestra formación incluye experiencia en PRODECON y el TFJA, lo que nos da una visión completa del proceso de fiscalización para diseñar estrategias más efectivas.",
         icon: ShieldCheck
     },
     {
         title: "Casos de Alto Impacto",
-        desc: "Defensa exitosa de créditos fiscales de gran cuantía con sentencias favorables firmes.",
+        desc: "Hemos logrado sentencias favorables y firmes en la defensa de créditos fiscales de gran cuantía ante autoridades federales.",
         icon: UserCheck
     },
     {
         title: "Acción Inmediata",
-        desc: "Restablecimiento de Sellos Digitales y liberación de cuentas bancarias en tiempo récord.",
+        desc: "Gestionamos el restablecimiento de Sellos Digitales y la liberación de cuentas bancarias en el menor tiempo posible.",
         icon: Lock
     }
 ];
 
 export function Stats() {
     return (
-        <section id="firma" className="py-16 md:py-32 bg-[#0F1216]">
-            <div className="container mx-auto px-6">
+        <section id="firma" className="py-28 md:py-40" style={{ backgroundColor: "#EEF1F6" }}> {/* DI — era py-20 md:py-28 */}
+            <div className="container mx-auto px-6" style={{ maxWidth: "1200px" }}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-                    {/* Left: Text Content */}
+                    {/* Left */}
                     <motion.div
-                        initial={{ opacity: 0, x: -30 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8 }}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, margin: "-80px" }}
+                        variants={{
+                            hidden: {},
+                            visible: { transition: { staggerChildren: 0.12 } },
+                        }}
                     >
-                        <span className="text-[#c69955] font-sans text-[10px] tracking-[0.4em] uppercase font-bold mb-6 block">Nuestra Firma</span>
-                        <h2 className="text-4xl md:text-5xl font-display text-white mb-10 leading-tight">
-                            Conocimiento Profundo de la Autoridad. <br />
-                            <span className="italic font-light text-[#c69955]">Defensa Sin Concesiones.</span>
-                        </h2>
+                        <motion.p
+                            variants={{
+                                hidden: { opacity: 0, x: -20 },
+                                visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+                            }}
+                            className="text-[11px] tracking-[0.28em] uppercase font-semibold mb-5"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: "#2C5494" }}
+                        >
+                            La Firma
+                        </motion.p>
+                        <motion.h2
+                            variants={{
+                                hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+                                visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.7 } },
+                            }}
+                            className="font-bold leading-tight mb-8"
+                            style={{
+                                fontFamily: "'Author', sans-serif",
+                                fontSize: "clamp(32px, 4.5vw, 48px)", /* DI — era clamp(28px,3.5vw,40px) */
+                                color: "#1A1D26",
+                            }}
+                        >
+                            Conocimiento Profundo en<br />
+                            Defensa Fiscal y Procesos<br />
+                            <span style={{ color: "#1B3564" }}>de Fiscalización.</span>
+                        </motion.h2>
 
-                        <p className="text-zinc-400 font-sans font-light text-lg md:text-xl leading-relaxed mb-8">
-                            Con más de 10 años de experiencia en el sector jurídico fiscal, nuestra trayectoria se fundamenta en un conocimiento profundo de cómo operan las autoridades fiscales y administrativas desde adentro.
-                            <br /><br />
-                            Los socios de la firma forjaron su experiencia en la Procuraduría de la Defensa del Contribuyente (PRODECON) y el Tribunal Federal de Justicia Administrativa (TFJA), complementada con una trayectoria consolidada en los despachos fiscales más exigentes del país.
-                            <br /><br />
-                            Esa experiencia integral nos permite gestionar casos de alto impacto económico. Hemos obtenido sentencias favorables que anulan determinaciones millonarias de la autoridad, protegiendo efectivamente el patrimonio y la viabilidad financiera de nuestros clientes.
-                        </p>
-                        
-                        <div className="border-l-2 border-[#c69955] pl-6 mt-8">
-                            <p className="text-white text-lg font-display italic">
-                                "Conocemos a la autoridad porque trabajamos dentro de ella. Esa ventaja estratégica define nuestra defensa."
-                            </p>
-                        </div>
+                        <motion.p
+                            variants={{
+                                hidden: { opacity: 0, y: 16 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                            }}
+                            className="text-base leading-relaxed mb-6"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                        >
+                            Nuestra trayectoria se fundamenta en la experiencia práctica acumulada en la
+                            defensa fiscal de alto impacto y en un entendimiento profundo de cómo operan
+                            los procesos de fiscalización en México.
+                        </motion.p>
+                        <motion.p
+                            variants={{
+                                hidden: { opacity: 0, y: 16 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+                            }}
+                            className="text-base leading-relaxed mb-8"
+                            style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                        >
+                            Contamos con formación adquirida en instituciones como PRODECON y el
+                            Tribunal Federal de Justicia Administrativa, complementada con años de
+                            ejercicio riguroso en el sector privado. Esa combinación nos permite
+                            anticipar escenarios y diseñar estrategias con mayor precisión.
+                        </motion.p>
+
+                        <motion.blockquote
+                            variants={{
+                                hidden: { opacity: 0, x: -30, scaleX: 0.95 },
+                                visible: { opacity: 1, x: 0, scaleX: 1, transition: { duration: 0.6, ease: "easeOut" } },
+                            }}
+                            className="pl-6 italic text-base leading-relaxed font-medium"
+                            style={{
+                                fontFamily: "'DM Sans', sans-serif",
+                                color: "#1A1D26",
+                                borderLeft: "4px solid #1B3564",
+                                transformOrigin: "left center",
+                            }}
+                        >
+                            "Nuestra experiencia define la estrategia; nuestra práctica
+                            garantiza su ejecución precisa."
+                        </motion.blockquote>
                     </motion.div>
 
-                    {/* Right: Pillars Grid */}
-                    <div className="grid grid-cols-1 gap-6">
+                    {/* Right: Pillars */}
+                    <div className="flex flex-col gap-4">
                         {pillars.map((pillar, index) => (
                             <motion.div
                                 key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group p-6 sm:p-10 bg-white/5 border border-white/5 hover:border-[#c69955]/30 transition-all duration-500 rounded-sm flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 sm:gap-8"
+                                initial={{ opacity: 0, x: 40, filter: "blur(6px)" }}
+                                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                                viewport={{ once: true, margin: "-60px" }}
+                                transition={{ duration: 0.55, delay: index * 0.13, ease: "easeOut" }}
+                                className="flex items-start gap-6 p-6 rounded-xl bg-white transition-shadow duration-300 hover:shadow-md card-folder"
+                                style={{ border: "1.5px solid #D8DFE9" }}
                             >
-                                <div className="w-16 h-16 shrink-0 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#c69955] group-hover:border-[#c69955] transition-all duration-500 shadow-xl">
-                                    <pillar.icon size={24} className="text-[#c69955] group-hover:text-black transition-colors" />
+                                <div
+                                    className="w-11 h-11 shrink-0 flex items-center justify-center rounded-lg"
+                                    style={{ backgroundColor: "#EEF1F6" }}
+                                >
+                                    <pillar.icon size={20} style={{ color: "#2C5494" }} />
                                 </div>
                                 <div>
-                                    <h4 className="text-white font-display text-xl mb-3 group-hover:text-[#c69955] transition-colors">{pillar.title}</h4>
-                                    <p className="text-zinc-500 font-sans font-light text-sm leading-relaxed group-hover:text-zinc-400 transition-colors">
+                                    <h4
+                                        className="font-semibold mb-1"
+                                        style={{ fontFamily: "'Author', sans-serif", fontSize: "18px", color: "#1A1D26" }}
+                                    >
+                                        {pillar.title}
+                                    </h4>
+                                    <p
+                                        className="text-sm leading-relaxed"
+                                        style={{ fontFamily: "'DM Sans', sans-serif", color: "#4A5568" }}
+                                    >
                                         {pillar.desc}
                                     </p>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
-
                 </div>
 
-                {/* Social Proof Bar / Credibility Bar */}
-                <div className="mt-16 pt-10 md:mt-32 md:pt-20 border-t border-white/5">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-12 text-center">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
-                        >
-                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Ex-funcionarios</p>
-                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">de PRODECON y TFJA</p>
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.1 }}
-                        >
-                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Litigio</p>
-                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">de Alta Cuantía</p>
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
-                        >
-                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Protección Patrimonial</p>
-                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">Efectiva</p>
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.3 }}
-                        >
-                            <p className="text-base md:text-lg font-display text-white mb-2 font-bold">Cobertura Federal</p>
-                            <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[#c69955]">y Estatal</p>
-                        </motion.div>
-                    </div>
-                </div>
             </div>
         </section>
     );
